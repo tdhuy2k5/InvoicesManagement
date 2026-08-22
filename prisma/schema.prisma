@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum InvoiceStatus {
+  DRAFT
+  ISSUED
+  CANCELED
+  REPLACED
+}
+
+model Invoice {
+  id                  String        @id @default(uuid())
+  templateCode        String        @default("01GTKT3/001")
+  zone                String        @default("1C26TAA")
+  sequenceNumber      Int           @default(autoincrement())
+  invoiceNumber       String        @unique
+  status              InvoiceStatus @default(DRAFT)
+  customerName        String
+  customerTaxCode     String
+  customerEmail       String
+  customerAddress     String
+  customerPhone       String?
+  customerBankAccount String?
+  paymentMethod       String        @default("TM/CK")
+  sellerName          String
+  sellerTaxCode       String
+  sellerAddress       String
+  sellerPhone         String
+  sellerEmail         String?
+  sellerBankAccount   String?
+  taxDepartment       String?
+  totalAmount         Decimal
+  vatAmount           Decimal
+  vatRate             Int
+  notes               String
+  cancelReason        String?
+  issueDate           DateTime?
+  originalInvoiceId   String?
+  replacedById        String?
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+
+  items           InvoiceItem[]
+  originalInvoice Invoice?      @relation("InvoiceReplacement", fields: [originalInvoiceId], references: [id])
+  replacedBy      Invoice[]     @relation("InvoiceReplacement")
+
+  // ==============================================================================
+  // HIGH-PERFORMANCE B-TREE INDEXES (Avoiding slow unindexed LIKE scans)
+  // ==============================================================================
+  @@unique([zone, sequenceNumber])       // Composite unique: zone + sequenceNumber
+  @@index([sequenceNumber])              // Fast integer search: WHERE sequenceNumber = 42
+  @@index([customerTaxCode])             // Fast exact tax code search: WHERE customerTaxCode = '0101234567'
+  @@index([issueDate])                   // Date range filtering: WHERE issueDate BETWEEN ...
+  @@index([createdAt])                   // Creation date sorting & filtering
+  @@index([status, issueDate])           // Composite index: Filter by status & issueDate
+  @@index([status, createdAt])           // Composite index: Filter by status & createdAt
+}
+
+model InvoiceItem {
+  id          Int     @id @default(autoincrement())
+  invoiceId   String
+  description String
+  unit        String
+  quantity    Decimal
+  unitPrice   Decimal
+  amount      Decimal
+
+  invoice     Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@index([invoiceId])
+}
