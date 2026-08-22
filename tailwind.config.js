@@ -1,0 +1,172 @@
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: [
+    './index.html',
+    './frontend/index.html',
+    './frontend/src/**/*.{js,ts,jsx,tsx}',
+    './frontend/**/*.{js,ts,jsx,tsx,html}',
+    './backend/src/**/*.{js,ts,jsx,tsx}',
+  ],
+  theme: {
+    extend: {
+      colors: {
+        // Fiscal Precision Material Design 3 Palette
+        surface: {
+          DEFAULT: '#f8f9ff',
+          dim: '#cbdbf5',
+          bright: '#f8f9ff',
+          container: {
+            lowest: '#ffffff',
+            low: '#eff4ff',
+            DEFAULT: '#e5eeff',
+            high: '#dce9ff',
+            highest: '#d3e4fe',
+          },
+          variant: '#d3e4fe',
+          tint: '#565e74',
+        },
+        'surface-container-lowest': '#ffffff',
+        'surface-container-low': '#eff4ff',
+        'surface-container': '#e5eeff',
+        'surface-container-high': '#dce9ff',
+        'surface-container-highest': '#d3e4fe',
+        'surface-dim': '#cbdbf5',
+        'surface-bright': '#f8f9ff',
+        'surface-variant': '#d3e4fe',
+
+        'on-surface': {
+          DEFAULT: '#0b1c30',
+          variant: '#45464d',
+        },
+        'on-surface-variant': '#45464d',
+        'inverse-surface': '#213145',
+        'inverse-on-surface': '#eaf1ff',
+
+        outline: {
+          DEFAULT: '#76777d',
+          variant: '#c6c6cd',
+        },
+        'outline-variant': '#c6c6cd',
+
+        primary: {
+          DEFAULT: '#0f172a',
+          container: '#131b2e',
+          fixed: '#dae2fd',
+          'fixed-dim': '#bec6e0',
+          50: '#f8fafc',
+          100: '#f1f5f9',
+          200: '#e2e8f0',
+          300: '#cbd5e1',
+          400: '#94a3b8',
+          500: '#64748b',
+          600: '#475569',
+          700: '#334155',
+          800: '#1e293b',
+          900: '#0f172a',
+          950: '#020617',
+        },
+        'primary-container': '#131b2e',
+        'on-primary': {
+          DEFAULT: '#ffffff',
+          container: '#7c839b',
+          fixed: '#131b2e',
+          'fixed-variant': '#3f465c',
+        },
+        'on-primary-container': '#7c839b',
+        'inverse-primary': '#bec6e0',
+
+        secondary: {
+          DEFAULT: '#006c49',
+          container: '#6cf8bb',
+          fixed: '#6ffbbe',
+          'fixed-dim': '#4edea3',
+          50: '#ecfdf5',
+          100: '#d1fae5',
+          200: '#a7f3d0',
+          300: '#6ee7b7',
+          400: '#34d399',
+          500: '#10b981',
+          600: '#059669',
+          700: '#047857',
+          800: '#065f46',
+          900: '#064e3b',
+        },
+        'secondary-container': '#6cf8bb',
+        'on-secondary': {
+          DEFAULT: '#ffffff',
+          container: '#00714d',
+          fixed: '#002113',
+          'fixed-variant': '#005236',
+        },
+        'on-secondary-container': '#00714d',
+
+        tertiary: {
+          DEFAULT: '#000000',
+          container: '#2a1700',
+        },
+        'tertiary-container': '#2a1700',
+        'on-tertiary': {
+          DEFAULT: '#ffffff',
+          container: '#b87500',
+        },
+        'on-tertiary-container': '#b87500',
+
+        error: {
+          DEFAULT: '#ba1a1a',
+          container: '#ffdad6',
+        },
+        'error-container': '#ffdad6',
+        'on-error': {
+          DEFAULT: '#ffffff',
+          container: '#93000a',
+        },
+        'on-error-container': '#93000a',
+
+        background: {
+          DEFAULT: '#f8f9ff',
+        },
+        'on-background': {
+          DEFAULT: '#0b1c30',
+        },
+      },
+      fontFamily: {
+        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        mono: ['"JetBrains Mono"', 'monospace'],
+        headline: ['Inter', 'sans-serif'],
+        body: ['Inter', 'sans-serif'],
+        label: ['Inter', 'sans-serif'],
+      },
+      fontSize: {
+        'display-lg': ['36px', { lineHeight: '44px', letterSpacing: '-0.02em', fontWeight: '700' }],
+        'headline-lg': ['24px', { lineHeight: '32px', letterSpacing: '-0.01em', fontWeight: '600' }],
+        'headline-md': ['20px', { lineHeight: '28px', letterSpacing: '-0.01em', fontWeight: '600' }],
+        'title-lg': ['18px', { lineHeight: '24px', fontWeight: '600' }],
+        'title-md': ['16px', { lineHeight: '24px', fontWeight: '600' }],
+        'body-lg': ['18px', { lineHeight: '28px', fontWeight: '400' }],
+        'body-md': ['16px', { lineHeight: '24px', fontWeight: '400' }],
+        'body-sm': ['14px', { lineHeight: '20px', fontWeight: '400' }],
+        'label-lg': ['14px', { lineHeight: '20px', letterSpacing: '0.02em', fontWeight: '600' }],
+        'label-md': ['12px', { lineHeight: '16px', letterSpacing: '0.05em', fontWeight: '600' }],
+        'label-sm': ['11px', { lineHeight: '14px', letterSpacing: '0.05em', fontWeight: '600' }],
+      },
+      spacing: {
+        base: '4px',
+        gutter: '24px',
+        'stack-sm': '8px',
+        'stack-md': '16px',
+        'stack-lg': '24px',
+        'container-margin': '32px',
+      },
+      borderRadius: {
+        sm: '0.125rem',
+        DEFAULT: '0.25rem',
+        md: '0.375rem',
+        lg: '0.5rem',
+        xl: '0.75rem',
+        '2xl': '1rem',
+        full: '9999px',
+      },
+    },
+  },
+  plugins: [],
+};
