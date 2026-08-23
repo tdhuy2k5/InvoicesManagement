@@ -1,0 +1,53 @@
+services:
+  # ==============================================================================
+  # Local Development Database
+  # ==============================================================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: invoicemanagement_postgres_dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+      POSTGRES_DB: invoicedb
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata_dev:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d invoicedb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - invoice_dev_network
+
+  # ==============================================================================
+  # Local Development Web (Hot Reloading with Vite)
+  # ==============================================================================
+  web-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: invoicemanagement_web_dev
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      DATABASE_URL: "postgresql://postgres:postgrespassword@postgres:5432/invoicedb?schema=public"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - invoice_dev_network
+
+volumes:
+  pgdata_dev:
+    name: invoicemanagement_pgdata_dev
+
+networks:
+  invoice_dev_network:
+    name: invoicemanagement_dev_network
