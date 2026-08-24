@@ -104,21 +104,24 @@ Truy cập ứng dụng ngay:
 
 Hệ thống được thiết kế theo đúng quy trình nghiệp vụ kế toán và Nghị định 123/2020/NĐ-CP:
 
-```text
-[1. Tạo Bản Nháp] ──> [2. Ký Duyệt & Phát Hành] ──> [3. Xem / In Ngay / Tải PDF]
-       │                                                      │
-       └──> [Sửa / Xóa Nháp]                                  ├──> [4. Lập Hóa Đơn Thay Thế] (khi sai sót)
-                                                              └──> [5. Hủy Hóa Đơn] (bắt buộc có lý do)
+```mermaid
+flowchart LR
+    A["1. Tạo Bản Nháp"] --> B["2. Ký Duyệt & Phát Hành"]
+    A -.-> S["Sửa / Xóa Bản Nháp"]
+    B --> C["3. Xem / In Ngay / Tải PDF"]
+    B --> D["4. Lập HĐ Thay Thế (Khi có sai sót)"]
+    B --> E["5. Hủy Hóa Đơn (Bắt buộc có lý do)"]
 ```
 
 ---
 
 ### Quy trình 1: Lập hóa đơn mới và Ký số phát hành (`DRAFT` -> `ISSUED`)
 
-```text
-[Trang chủ (/)] ──(Bấm "+ Tạo hóa đơn mới")──> [Form Nhập Liệu]
-     ──(Bấm "Lưu bản nháp")──> [Chi tiết HĐ Nháp (NHAP-XXXXXX)]
-     ──(Bấm "Ký duyệt & Phát hành")──> [Hóa đơn chính thức (1C26TAA-000000X)]
+```mermaid
+flowchart LR
+    A["Trang chủ (/)"] -- "Bấm '+ Tạo hóa đơn mới'" --> B["Form Nhập Liệu"]
+    B -- "Bấm 'Lưu bản nháp'" --> C["Chi tiết HĐ Nháp<br/>(NHAP-XXXXXX)"]
+    C -- "Bấm 'Ký duyệt & Phát hành'" --> D["Hóa đơn chính thức<br/>(1C26TAA-000000X)"]
 ```
 
 - **Bước 1 — Mở form tạo mới:** Tại thanh điều hướng trang chủ, bấm nút **`+ Tạo hóa đơn mới`** (màu xanh dương).
@@ -136,10 +139,11 @@ Hệ thống được thiết kế theo đúng quy trình nghiệp vụ kế to�
 
 ### Quy trình 2: Xem trước, In ấn trực tiếp & Tải file PDF
 
-```text
-[Chi tiết Hóa Đơn] ──(Bấm "Xem / In hóa đơn")──> [Modal Bản In Hóa Đơn A4]
-                                                       ├──(Bấm "In Ngay")──> [Lệnh In Trình Duyệt (Native PDF Stream)]
-                                                       └──(Bấm "Tải PDF")──> [Tải File .pdf Về Máy]
+```mermaid
+flowchart LR
+    A["Chi tiết Hóa Đơn"] -- "Bấm 'Xem / In hóa đơn'" --> B["Modal Bản In Hóa Đơn A4"]
+    B -- "Bấm 'In Ngay'" --> C["Lệnh In Trình Duyệt<br/>(Native PDF Stream)"]
+    B -- "Bấm 'Tải PDF'" --> D["Tải File .pdf Về Máy"]
 ```
 
 - **Bước 1:** Tại trang chi tiết bất kỳ hóa đơn nào, bấm nút **`Xem / In hóa đơn`** để mở cửa sổ xem trước khổ giấy A4 chuẩn Bộ Tài chính.
@@ -150,9 +154,11 @@ Hệ thống được thiết kế theo đúng quy trình nghiệp vụ kế to�
 
 ### Quy trình 3: Xử lý sai sót bằng Hóa đơn thay thế (`ISSUED` -> `REPLACED`)
 
-```text
-[HĐ Gốc Đã Ký (ISSUED)] ──(Bấm "Thay thế hóa đơn")──> [Form Thay Thế & Biên Bản]
-     ──(Bấm "Xác nhận thay thế")──> [HĐ Cũ: REPLACED (Khóa)] + [HĐ Mới: Cấp Số Mới]
+```mermaid
+flowchart LR
+    A["HĐ Gốc Đã Ký (ISSUED)"] -- "Bấm 'Thay thế hóa đơn'" --> B["Form Thay Thế & Biên Bản"]
+    B -- "Bấm 'Xác nhận thay thế'" --> C["HĐ Cũ: REPLACED (Khóa)"]
+    B -- "Cấp số mới" --> D["HĐ Mới: ISSUED"]
 ```
 
 - **Áp dụng khi:** Hóa đơn đã ký phát hành nhưng phát hiện sai sót về tiền hàng, thông tin thuế cần xuất hóa đơn mới thay thế.
@@ -165,9 +171,10 @@ Hệ thống được thiết kế theo đúng quy trình nghiệp vụ kế to�
 
 ### Quy trình 4: Hủy hóa đơn đã phát hành (`ISSUED` -> `CANCELED`)
 
-```text
-[HĐ Đã Ký (ISSUED)] ──(Bấm "Hủy hóa đơn")──> [Popup Nhập Lý Do Hủy]
-     ──(Bấm "Xác nhận hủy")──> [HĐ Chuyển CANCELED + Đóng Dấu Mờ "ĐÃ HỦY / VOID"]
+```mermaid
+flowchart LR
+    A["HĐ Đã Ký (ISSUED)"] -- "Bấm 'Hủy hóa đơn'" --> B["Popup Nhập Lý Do Hủy"]
+    B -- "Bấm 'Xác nhận hủy'" --> C["HĐ Chuyển CANCELED<br/>+ Đóng dấu mờ VOID"]
 ```
 
 - **Bước 1:** Tại hóa đơn đã ký phát hành, bấm nút **`Hủy hóa đơn`** (màu đỏ).
