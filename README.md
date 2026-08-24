@@ -4,12 +4,12 @@
 > **Core Tech Stack:** TypeScript, Node.js (Express), PostgreSQL 16, Prisma ORM, Puppeteer Core, React 18 (Vite + TailwindCSS), Docker Compose.
 
 ---
-
+- Các vấn đề em nhận thấy và cách giải quyết của em như sau
 ## 1. Mô Tả Dự Án & Các Giải Pháp Kỹ Thuật Cốt Lõi
 
 Thay vì triển khai lưu trữ nguyên khối như các hệ thống CRUD thông thường, **exportInvoice** được thiết kế dựa trên các nguyên lý kỹ thuật hệ thống và bài toán nghiệp vụ thuế thực tế:
 
-### 1. Tách Cặp Trường Nguyên Tử `(zone, sequenceNumber)` — Chuyển Dịch Độ Phức Tạp Từ $O(N)$ Về $O(\log N)$
+### 1. Tách Mã Hóa Đơn thành `(zone, sequenceNumber)` — Chuyển Dịch Độ Phức Tạp Từ $O(N)$ Về $O(\log N)$
 
 - **Hạn chế của cách làm thông thường:** Lưu gộp chuỗi `invoiceNumber = "1C26TAA-0000005"` khiến các thao tác tìm kiếm bắt buộc phải sử dụng chuỗi với wildcard (`LIKE '1C26TAA-%'`) hoặc regex. Thao tác này **vô hiệu hóa cấu trúc chỉ mục B-Tree**, ép Database thực hiện **Full Table Scan ($O(N)$)**.
 - **Giải pháp tối ưu:** Phân tách thành cặp `zone (VARCHAR)` và `sequenceNumber (INT)` kết hợp **Compound Unique B-Tree Index `(zone, sequenceNumber)`**:
