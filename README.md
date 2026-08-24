@@ -4,7 +4,9 @@
 > **Core Tech Stack:** TypeScript, Node.js (Express), PostgreSQL 16, Prisma ORM, Puppeteer Core, React 18 (Vite + TailwindCSS), Docker Compose.
 
 ---
+
 - Các vấn đề em nhận thấy và cách giải quyết của em như sau
+
 ## 1. Mô Tả Dự Án & Các Giải Pháp Kỹ Thuật Cốt Lõi
 
 Thay vì triển khai lưu trữ nguyên khối như các hệ thống CRUD thông thường, **exportInvoice** được thiết kế dựa trên các nguyên lý kỹ thuật hệ thống và bài toán nghiệp vụ thuế thực tế:
@@ -52,23 +54,23 @@ Thay vì triển khai lưu trữ nguyên khối như các hệ thống CRUD thô
 
 ## 2. Bảng Estimate Thời Gian Thực Hiện vs Thực Tế
 
-| Nhóm công việc / Nhiệm vụ cụ thể | Estimate (Dự kiến) | Thực tế (Actual) | Ghi chú & Đánh giá hiệu quả |
-| :--- | :---: | :---: | :--- |
-| **1. Nghiên cứu & Khảo sát nghiệp vụ:** | | | |
-| - Nghiên cứu quy chuẩn Nghị định 123/2020 & Thông tư 78/2021 | 3.0 giờ | 3.5 giờ | Mất thêm thời gian rà soát kỹ quy định về phân loại hóa đơn có mã CQT, nguyên tắc hủy/thay thế 1 cấp và dải số không khuyết |
-| - Nghiên cứu kiến trúc Database & Tối ưu hóa Indexing | 2.5 giờ | 2.0 giờ | Nắm chắc cấu trúc B-Tree nên nhanh chóng chốt giải pháp phân tách cặp `(zone, sequenceNumber)` để đưa $O(N) \rightarrow O(\log N)$ |
-| - Thiết Kế UI/UX, tìm giải pháp kết xuất PDF & In ấn trình duyệt | 2.0 giờ | 2.5 giờ | Thiết kế UI/UX mất nhiều thời gian|
-| **2. Thiết kế & Triển khai mã nguồn (Implementation):** | | | |
-| - Thiết kế Schema DB & Quản lý Migration (Prisma) | 1.5 giờ | 1.5 giờ | Hoàn thành đúng tiến độ nhờ Prisma CLI hỗ trợ sinh DDL và quản lý version migration mượt mà |
-| - Xây dựng Core Domain Logic & State Machine Guard | 3.5 giờ | 3.5 giờ | Đúng tiến độ; triển khai xong logic tính tiền, VAT, đọc số tiền tiếng Việt và bảo vệ vòng đời trạng thái |
-| - Triển khai Zero-Gap Sequence Service | 1.0 giờ | 1.0 giờ | Tận dụng tốt cơ chế Database Transaction và Atomic Sequence trong PostgreSQL nên triển khai nhanh hơn dự kiến |
-| - Xây dựng RESTful API Endpoints & Error Handler | 2.0 giờ | 2.0 giờ | Hoàn thành 11 API endpoints chuẩn RESTful, DTO validation và Middleware xử lý lỗi tập trung đúng kế hoạch |
-| - Xây dựng Template PDF & Cơ chế In ấn Native | 2.0 giờ | 2.5 giờ | Mất thêm thời gian căn chỉnh layout A4 chuẩn Bộ Tài chính, xử lý ngắt trang nhiều dòng và hiệu ứng dấu mờ watermark |
-| - Xây dựng Giao diện Web SPA (React + TailwindCSS) | 2.5 giờ | 2.0 giờ | Có giao diện từ figma nên chuyển thành react code nhanh hơn |
-| **3. Kiểm thử, Đóng gói & Tài liệu:** | | | |
-| - Viết Unit Tests & API Integration Tests | 2.5 giờ | 2.0 giờ | Vitest chạy nhanh và viết song song theo dạng TDD giúp hoàn thành 52 test cases sớm hơn |
-| - Cấu hình Docker, Postman Collection & Soạn thảo README | 2.0 giờ | 2.0 giờ | Dockerfile multi-stage, compose file, xuất Postman test suite và soạn thảo tài liệu hoàn tất đúng kế hoạch |
-| **Tổng cộng** | **24.5 giờ** | **24.0 giờ** | **Hoàn thành đạt 102% kế hoạch (Tiến độ thực tế bám sát dự kiến)** |
+| Nhóm công việc / Nhiệm vụ cụ thể                                 | Estimate (Dự kiến) | Thực tế (Actual) | Ghi chú & Đánh giá hiệu quả                                                                                                        |
+| :--------------------------------------------------------------- | :----------------: | :--------------: | :--------------------------------------------------------------------------------------------------------------------------------- |
+| **1. Nghiên cứu & Khảo sát nghiệp vụ:**                          |                    |                  |                                                                                                                                    |
+| - Nghiên cứu quy chuẩn Nghị định 123/2020 & Thông tư 78/2021     |      3.0 giờ       |     3.5 giờ      | Mất thêm thời gian rà soát kỹ quy định về phân loại hóa đơn có mã CQT, nguyên tắc hủy/thay thế 1 cấp và dải số không khuyết        |
+| - Nghiên cứu kiến trúc Database & Tối ưu hóa Indexing            |      2.5 giờ       |     2.0 giờ      | Nắm chắc cấu trúc B-Tree nên nhanh chóng chốt giải pháp phân tách cặp `(zone, sequenceNumber)` để đưa $O(N) \rightarrow O(\log N)$ |
+| - Thiết Kế UI/UX, tìm giải pháp kết xuất PDF & In ấn trình duyệt |      2.0 giờ       |     2.5 giờ      | Thiết kế UI/UX mất nhiều thời gian                                                                                                 |
+| **2. Thiết kế & Triển khai mã nguồn (Implementation):**          |                    |                  |                                                                                                                                    |
+| - Thiết kế Schema DB & Quản lý Migration (Prisma)                |      1.5 giờ       |     1.5 giờ      | Hoàn thành đúng tiến độ nhờ Prisma CLI hỗ trợ sinh DDL và quản lý version migration mượt mà                                        |
+| - Xây dựng Core Domain Logic & State Machine Guard               |      3.5 giờ       |     3.5 giờ      | Đúng tiến độ; triển khai xong logic tính tiền, VAT, đọc số tiền tiếng Việt và bảo vệ vòng đời trạng thái                           |
+| - Triển khai Zero-Gap Sequence Service                           |      1.0 giờ       |     1.0 giờ      | Tận dụng tốt cơ chế Database Transaction và Atomic Sequence trong PostgreSQL nên triển khai nhanh hơn dự kiến                      |
+| - Xây dựng RESTful API Endpoints & Error Handler                 |      2.0 giờ       |     2.0 giờ      | Hoàn thành 11 API endpoints chuẩn RESTful, DTO validation và Middleware xử lý lỗi tập trung đúng kế hoạch                          |
+| - Xây dựng Template PDF & Cơ chế In ấn Native                    |      2.0 giờ       |     2.5 giờ      | Mất thêm thời gian căn chỉnh layout A4 chuẩn Bộ Tài chính, xử lý ngắt trang nhiều dòng và hiệu ứng dấu mờ watermark                |
+| - Xây dựng Giao diện Web SPA (React + TailwindCSS)               |      2.5 giờ       |     2.0 giờ      | Có giao diện từ figma nên chuyển thành react code nhanh hơn                                                                        |
+| **3. Kiểm thử, Đóng gói & Tài liệu:**                            |                    |                  |                                                                                                                                    |
+| - Viết Unit Tests & API Integration Tests                        |      2.5 giờ       |     2.0 giờ      | Vitest chạy nhanh và viết song song theo dạng TDD giúp hoàn thành 52 test cases sớm hơn                                            |
+| - Cấu hình Docker, Postman Collection & Soạn thảo README         |      2.0 giờ       |     2.0 giờ      | Dockerfile multi-stage, compose file, xuất Postman test suite và soạn thảo tài liệu hoàn tất đúng kế hoạch                         |
+| **Tổng cộng**                                                    |    **24.5 giờ**    |   **24.0 giờ**   | **Hoàn thành đạt 102% kế hoạch (Tiến độ thực tế bám sát dự kiến)**                                                                 |
 
 ---
 
@@ -78,7 +80,7 @@ Thay vì triển khai lưu trữ nguyên khối như các hệ thống CRUD thô
 
 Mở terminal tại thư mục gốc dự án và chạy:
 
-- Cần tải Docker Desktop hoặc Docker cho Linux và đang khởi chạy.
+- Yêu cầu: Đã cài đặt Docker Desktop (hỗ trợ đầy đủ Windows, macOS bao gồm cả Apple Silicon M-series, và Linux) và đang mở.
 
 ```bash
 git clone https://github.com/tdhuy2k5/InvoicesManagement.git
