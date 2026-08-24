@@ -86,6 +86,7 @@ export const InvoicePrintModal: React.FC<InvoicePrintModalProps> = ({
   const [zoomLevel, setZoomLevel] = useState<number>(100);
   const [copyType, setCopyType] = useState<'LIEN_1' | 'LIEN_2' | 'LIEN_3'>('LIEN_1');
   const [isDownloading, setIsDownloading] = useState<boolean>(false);
+  const [isPrinting, setIsPrinting] = useState<boolean>(false);
 
   // Handle ESC key to close
   useEffect(() => {
@@ -104,8 +105,53 @@ export const InvoicePrintModal: React.FC<InvoicePrintModalProps> = ({
   const handleZoomOut = () => setZoomLevel((prev) => Math.max(prev - 15, 60));
   const handleZoomReset = () => setZoomLevel(100);
 
-  const handlePrint = () => {
-    window.print();
+  /**
+   * Direct PDF printing: Fetches exact PDF from backend and triggers native PDF print
+   * Ensures 100% identical styling, headers, and vector resolution with Downloaded PDF
+   */
+  const handlePrint = async () => {
+    if (isPrinting) return;
+    setIsPrinting(true);
+    try {
+      const url = invoiceApi.getPdfDownloadUrl(invoiceId, false);
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('Không thể tải PDF để in');
+      const blob = await res.blob();
+      const blobUrl = URL.createObjectURL(blob);
+
+      const iframe = document.createElement('iframe');
+      iframe.style.position = 'fixed';
+      iframe.style.right = '0';
+      iframe.style.bottom = '0';
+      iframe.style.width = '0';
+      iframe.style.height = '0';
+      iframe.style.border = '0';
+      iframe.src = blobUrl;
+      document.body.appendChild(iframe);
+
+      iframe.onload = () => {
+        setTimeout(() => {
+          try {
+            iframe.contentWindow?.focus();
+            iframe.contentWindow?.print();
+          } catch {
+            const printWindow = window.open(blobUrl, '_blank');
+            printWindow?.focus();
+            printWindow?.print();
+          }
+          setTimeout(() => {
+            if (document.body.contains(iframe)) {
+              document.body.removeChild(iframe);
+            }
+            URL.revokeObjectURL(blobUrl);
+          }, 60000);
+        }, 300);
+      };
+    } catch {
+      window.print();
+    } finally {
+      setIsPrinting(false);
+    }
   };
 
   const handleDownloadPdf = async () => {
@@ -207,11 +253,23 @@ export const InvoicePrintModal: React.FC<InvoicePrintModalProps> = ({
             {/* Action Buttons */}
             <button
               type="button"
+              disabled={isPrinting}
               onClick={handlePrint}
-              className="px-3.5 py-1.5 bg-primary text-on-primary rounded-lg text-xs font-semibold hover:opacity-90 transition flex items-center gap-1.5 shadow-sm"
+              className={`px-3.5 py-1.5 bg-primary text-on-primary rounded-lg text-xs font-semibold hover:opacity-90 transition flex items-center gap-1.5 shadow-sm ${
+                isPrinting ? 'opacity-70 cursor-wait' : ''
+              }`}
             >
-              <span className="material-symbols-outlined text-[16px]">print</span>
-              <span>In Ngay</span>
+              {isPrinting ? (
+                <>
+                  <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                  <span>Đang Chuẩn Bị In...</span>
+                </>
+              ) : (
+                <>
+                  <span className="material-symbols-outlined text-[16px]">print</span>
+                  <span>In Ngay</span>
+                </>
+              )}
             </button>
 
             <button
@@ -247,10 +305,10 @@ export const InvoicePrintModal: React.FC<InvoicePrintModalProps> = ({
         </div>
 
         {/* Scrollable Preview Canvas */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-8 bg-surface-container-low flex justify-center items-start print:p-0 print:bg-white print:overflow-visible">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-8 bg-surface-container-low flex justify-center items-start print:p-0 print:bg-white print:overflow-visible print:block print:w-full">
           <div
-            className="w-full flex justify-center transition-transform duration-200 print:transform-none"
-            style={{ transform: `scale(${zoomLevel / 100})`, transformOrigin: 'top center' }}
+            className="w-full flex justify-center transition-transform duration-200 print:block print:w-full print:transform-none print:m-0 print:p-0"
+            style={{ transform: zoomLevel !== 100 ? `scale(${zoomLevel / 100})` : undefined, transformOrigin: 'top center' }}
           >
             <InvoiceVatTemplate
               templateCode={templateCode}

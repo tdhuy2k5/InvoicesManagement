@@ -183,12 +183,14 @@ export const InvoiceDetailPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-background text-on-surface flex flex-col font-sans">
       {/* Global Header */}
-      <GlobalHeader
-        appName="exportInvoice"
-        activeNav="invoices"
-        onNavigateToInvoiceList={() => navigate('/invoices')}
-        onNavigateToCreateInvoice={() => navigate('/invoices/new')}
-      />
+      <div className="print:hidden">
+        <GlobalHeader
+          appName="exportInvoice"
+          activeNav="invoices"
+          onNavigateToInvoiceList={() => navigate('/invoices')}
+          onNavigateToCreateInvoice={() => navigate('/invoices/new')}
+        />
+      </div>
 
       {/* Invoice Header Detail */}
       <InvoiceHeaderDetail
@@ -220,7 +222,7 @@ export const InvoiceDetailPage: React.FC = () => {
       />
 
       {/* Main Full-Width Workspace (Expanded 12 cols layout) */}
-      <main className="flex-1 w-full max-w-[1440px] mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+      <main className="flex-1 w-full max-w-[1440px] mx-auto p-4 sm:p-6 lg:p-8 space-y-6 print:hidden">
         {/* Party Information */}
         <InvoicePartyInfo
           sellerName={invoice.sellerName}

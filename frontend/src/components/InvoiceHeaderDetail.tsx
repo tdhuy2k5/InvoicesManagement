@@ -121,7 +121,7 @@ export const InvoiceHeaderDetail: React.FC<InvoiceHeaderDetailProps> = ({
   const canCancel = status === 'ISSUED';
 
   return (
-    <div className="bg-surface px-gutter py-stack-md border-b border-outline-variant shrink-0 flex flex-col gap-4 z-10 shadow-sm relative">
+    <div className="bg-surface px-gutter py-stack-md border-b border-outline-variant shrink-0 flex flex-col gap-4 z-10 shadow-sm relative print:hidden">
       {/* Back link */}
       <div
         onClick={onBackToList}

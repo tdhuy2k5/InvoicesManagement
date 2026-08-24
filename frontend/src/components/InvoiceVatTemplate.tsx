@@ -183,7 +183,7 @@ export const InvoiceVatTemplate: React.FC<InvoiceVatTemplateProps> = ({
         fontFamily: "'Times New Roman', Times, 'Liberation Serif', serif",
         letterSpacing: 'normal',
       }}
-      className={`relative bg-white text-gray-900 p-6 sm:p-10 max-w-[850px] mx-auto border border-gray-400 shadow-lg text-[13px] leading-snug print:border-none print:shadow-none print:p-0 print:m-0 print:max-w-none print:w-full select-text overflow-hidden ${className}`}
+      className={`relative bg-white text-gray-900 p-6 sm:p-10 max-w-[850px] mx-auto border border-gray-400 shadow-lg text-[13px] leading-snug print:border-none print:shadow-none print:p-0 print:m-0 print:max-w-none print:w-full print:overflow-visible print:block select-text overflow-hidden ${className}`}
     >
       {/* WATERMARK SECTION (DRAFT / CANCELED) */}
       {isDraft && (
