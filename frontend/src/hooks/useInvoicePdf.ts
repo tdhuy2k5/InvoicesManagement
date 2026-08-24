@@ -6,12 +6,7 @@ export interface UseInvoicePdfOptions {
 }
 
 /**
- * Custom Hook: useInvoicePdf
- * Thin wiring adapter connecting UI to Backend Core PdfService workflows
- * Workflows:
- * - previewPdfStream (PdfService.getInvoicePdfStream)
- * - downloadPdfFile (PdfService.getInvoicePdfStream)
- * - printPdfFile (PdfService / browser print)
+ * Hook for managing PDF zoom level, rendering state, and download triggers.
  */
 export function useInvoicePdf(options: UseInvoicePdfOptions = {}) {
   const { showToast } = useInvoice();

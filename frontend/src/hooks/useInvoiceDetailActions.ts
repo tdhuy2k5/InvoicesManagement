@@ -6,14 +6,7 @@ import { InvoiceStatus } from '../components/InvoiceHeaderDetail';
 const stateGuard = new StateMachineGuard();
 
 /**
- * Custom Hook: useInvoiceDetailActions
- * Thin wiring adapter connecting InvoiceHeaderDetail to Backend Core StateMachineGuard & InvoiceService workflows
- * Workflows:
- * - cloneInvoiceFromDetail (InvoiceService.cloneInvoice)
- * - openIssueModal (StateMachineGuard.validateIssueTransition)
- * - openCancelModalFromDetail (StateMachineGuard.validateCancelTransition)
- * - openDeleteModalFromDetail (StateMachineGuard.validateDraftModification)
- * - replaceInvoiceFromDetail (StateMachineGuard.validateReplacementEligibility)
+ * Hook providing action handlers and state validation for the invoice detail view.
  */
 export function useInvoiceDetailActions(invoice?: {
   id: string;

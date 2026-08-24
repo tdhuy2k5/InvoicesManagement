@@ -1,7 +1,5 @@
 services:
-  # ==============================================================================
-  # PostgreSQL Database Service
-  # ==============================================================================
+  # PostgreSQL 16 Database
   postgres:
     image: postgres:16-alpine
     container_name: invoicemanagement_postgres
@@ -22,9 +20,7 @@ services:
     networks:
       - invoice_network
 
-  # ==============================================================================
-  # Backend Express REST API Service
-  # ==============================================================================
+  # Backend Express REST API + Puppeteer PDF Engine
   api:
     build:
       context: .
@@ -42,9 +38,7 @@ services:
     networks:
       - invoice_network
 
-  # ==============================================================================
-  # Web Application (React SPA + Nginx Reverse Proxy)
-  # ==============================================================================
+  # Frontend Web SPA + Nginx Reverse Proxy
   web:
     build:
       context: .

@@ -6,11 +6,7 @@ import { FormInvoiceItem } from '../components/InvoiceForm';
 const calculationService = new InvoiceCalculationService();
 
 /**
- * Custom Hook: useInvoiceCalculations
- * Thin wiring adapter connecting UI form calculations directly to Backend Core InvoiceCalculationService & CurrencyToWordsUtil
- * Workflows:
- * - calculateInvoiceTotals (InvoiceCalculationService.calculateInvoiceTotals)
- * - liveConvertVndToWords (CurrencyToWordsUtil.convertVndToWords)
+ * Hook for managing reactive invoice subtotal, VAT, total amount, and words calculations.
  */
 export function useInvoiceCalculations(items: FormInvoiceItem[], vatRate: number) {
   const calculations = useMemo(() => {

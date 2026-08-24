@@ -105,7 +105,9 @@ export class PdfService implements IPdfService {
     const isDraft = invoice.status === InvoiceStatus.DRAFT;
     const isCanceled = invoice.status === InvoiceStatus.CANCELED;
     const isIssued = invoice.status === InvoiceStatus.ISSUED || invoice.status === InvoiceStatus.REPLACED;
-    const displayNo = String(invoice.sequenceNumber || '').padStart(7, '0') || invoice.invoiceNumber.replace(/[^\d]/g, '').padStart(7, '0') || '0000001';
+    const displayNo = (invoice.sequenceNumber !== undefined && invoice.sequenceNumber !== null)
+      ? String(invoice.sequenceNumber).padStart(7, '0')
+      : (invoice.invoiceNumber ? (invoice.invoiceNumber.replace(/[^\d]/g, '').padStart(7, '0') || invoice.invoiceNumber) : '0000001');
 
     const itemsRows = (invoice.items || [])
       .map((item, index) => {
@@ -172,15 +174,17 @@ export class PdfService implements IPdfService {
       z-index: 10;
     }
     .watermark-title {
-      font-size: 42px;
+      font-size: 40px;
+      line-height: 1.2;
       font-weight: bold;
       text-transform: uppercase;
       color: #1e293b;
     }
     .watermark-sub {
-      font-size: 16px;
+      font-size: 15px;
+      line-height: 1.3;
       font-weight: bold;
-      margin-top: 6px;
+      margin-top: 10px;
     }
     .watermark-cancel {
       border-color: #b91c1c;
@@ -410,11 +414,30 @@ export class PdfService implements IPdfService {
     </div>
   </div>
 
-  ${invoice.originalInvoiceId ? `
-    <div class="replacement-banner">
-      ⚠️ <em>Hóa đơn này thay thế cho hóa đơn gốc mã định danh #${invoice.originalInvoiceId}</em>
-    </div>
-  ` : ''}
+  ${(() => {
+    if (!invoice.originalInvoiceId) return '';
+    const origNum = (invoice as any).originalInvoiceNumber || (invoice as any).originalInvoice?.invoiceNumber;
+    if (origNum) {
+      return `
+        <div class="replacement-banner">
+          ⚠️ <em>Hóa đơn này thay thế cho hóa đơn số <strong>${origNum}</strong></em>
+        </div>
+      `;
+    }
+    const match = invoice.notes?.match(/Thay thế cho hóa đơn\s*(?:số)?\s*([A-Z0-9-]+)/i);
+    if (match && match[1]) {
+      return `
+        <div class="replacement-banner">
+          ⚠️ <em>Hóa đơn này thay thế cho hóa đơn số <strong>${match[1]}</strong></em>
+        </div>
+      `;
+    }
+    return `
+      <div class="replacement-banner">
+        ⚠️ <em>Hóa đơn này thay thế cho hóa đơn gốc đã lập theo thỏa thuận 2 bên (Nghị định 123/2020/NĐ-CP)</em>
+      </div>
+    `;
+  })()}
 
   <!-- SELLER SECTION (FULL-WIDTH BOX) -->
   <div class="info-box">
@@ -556,8 +579,7 @@ export class PdfService implements IPdfService {
   }
 
   /**
-   * Workflow: invalidatePdfCache
-   * Deletes cached PDF file from disk storage when invoice state mutates
+   * Invalidates cached PDF file from disk storage when invoice state mutates.
    */
   async invalidatePdfCache(invoiceNumber: string): Promise<void> {
     try {
@@ -571,8 +593,7 @@ export class PdfService implements IPdfService {
   }
 
   /**
-   * Workflow: generatePdfFromHtml
-   * Renders A4 PDF using Puppeteer Core against system Chromium and persists to cache
+   * Renders A4 PDF using Puppeteer Core against Chromium and persists to disk cache.
    */
   async generatePdfFromHtml(html: string, outputPath: string): Promise<Buffer> {
     let browser;
@@ -621,8 +642,7 @@ export class PdfService implements IPdfService {
   }
 
   /**
-   * Workflow: getInvoicePdfStream
-   * Checks disk cache or coordinates HTML template compilation and Puppeteer PDF generation
+   * Retrieves an invoice PDF stream either from disk cache or generates on demand.
    */
   async getInvoicePdfStream(id: string | number, isDownload = false): Promise<PdfStreamResultDTO> {
     const invoice = await this.invoiceRepo.findInvoiceById(id);

@@ -41,6 +41,7 @@ export interface InvoiceFilterProps {
   onResetFilters?: () => void;
   onViewDetail?: () => void;
   onEditDraft?: () => void;
+  onReplaceInvoice?: () => void;
   onDeleteDraft?: () => void;
 }
 
@@ -80,6 +81,7 @@ export const InvoiceFilter: React.FC<InvoiceFilterProps> = ({
   onResetFilters,
   onViewDetail,
   onEditDraft,
+  onReplaceInvoice,
   onDeleteDraft,
 }) => {
   const statusTabs: { id: InvoiceStatusFilter; label: string; count?: number }[] = [
@@ -92,6 +94,7 @@ export const InvoiceFilter: React.FC<InvoiceFilterProps> = ({
 
   const hasSelection = Boolean(selectedInvoiceId);
   const isDraftSelected = selectedInvoiceStatus === 'DRAFT';
+  const isIssuedSelected = selectedInvoiceStatus === 'ISSUED';
 
   return (
     <div className="p-stack-md border-b border-outline-variant bg-surface flex flex-col gap-stack-md">
@@ -425,11 +428,13 @@ export const InvoiceFilter: React.FC<InvoiceFilterProps> = ({
             type="button"
             disabled={!hasSelection}
             onClick={onViewDetail}
-            className={`flex items-center gap-1 px-3 py-1.5 rounded-lg bg-primary-container text-on-primary-container font-label-md transition-opacity ${
-              hasSelection ? 'hover:opacity-90 cursor-pointer opacity-100' : 'opacity-50 cursor-not-allowed'
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-label-md transition-all ${
+              hasSelection
+                ? 'bg-primary hover:bg-primary/90 text-on-primary cursor-pointer shadow-xs font-semibold'
+                : 'bg-surface-container-low text-on-surface-variant/50 cursor-not-allowed border border-outline-variant/60'
             }`}
           >
-            <span className="material-symbols-outlined text-sm">visibility</span>
+            <span className="material-symbols-outlined text-[16px]">visibility</span>
             <span>Xem chi tiết</span>
           </button>
 
@@ -437,29 +442,50 @@ export const InvoiceFilter: React.FC<InvoiceFilterProps> = ({
             type="button"
             disabled={!hasSelection || !isDraftSelected}
             onClick={onEditDraft}
-            className={`flex items-center gap-1 px-3 py-1.5 rounded-lg border border-outline-variant font-label-md transition-all ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-label-md transition-all ${
               hasSelection && isDraftSelected
-                ? 'hover:bg-surface-container-low text-on-surface cursor-pointer opacity-100'
-                : 'opacity-40 cursor-not-allowed text-on-surface-variant'
+                ? 'bg-blue-600 hover:bg-blue-700 text-white cursor-pointer shadow-xs font-semibold'
+                : 'bg-surface-container-low text-on-surface-variant/50 cursor-not-allowed border border-outline-variant/60'
             }`}
             title={!isDraftSelected && hasSelection ? 'Chỉ được sửa hóa đơn ở trạng thái Bản Nháp' : ''}
           >
-            <span className="material-symbols-outlined text-sm">edit</span>
+            <span className="material-symbols-outlined text-[16px]">edit</span>
             <span>Sửa</span>
+          </button>
+
+          <button
+            type="button"
+            disabled={!hasSelection || !isIssuedSelected}
+            onClick={onReplaceInvoice}
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg font-label-md transition-all ${
+              hasSelection && isIssuedSelected
+                ? 'bg-amber-600 hover:bg-amber-700 text-white cursor-pointer shadow-sm font-semibold'
+                : 'bg-surface-container-low text-on-surface-variant/50 cursor-not-allowed border border-outline-variant/60'
+            }`}
+            title={
+              !hasSelection
+                ? 'Chọn một hóa đơn Đã Phát Hành để lập hóa đơn thay thế'
+                : !isIssuedSelected
+                ? 'Chỉ hóa đơn ở trạng thái Đã Phát Hành (ISSUED) mới có thể thay thế'
+                : 'Lập hóa đơn thay thế theo Nghị định 123'
+            }
+          >
+            <span className="material-symbols-outlined text-[16px]">swap_horiz</span>
+            <span>Lập HĐ Thay Thế</span>
           </button>
 
           <button
             type="button"
             disabled={!hasSelection || !isDraftSelected}
             onClick={onDeleteDraft}
-            className={`flex items-center gap-1 px-3 py-1.5 rounded-lg border border-outline-variant font-label-md transition-all ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-label-md transition-all ${
               hasSelection && isDraftSelected
-                ? 'hover:bg-error/10 text-error border-error/30 cursor-pointer opacity-100'
-                : 'opacity-40 cursor-not-allowed text-on-surface-variant'
+                ? 'bg-rose-600 hover:bg-rose-700 text-white cursor-pointer shadow-xs font-semibold'
+                : 'bg-surface-container-low text-on-surface-variant/50 cursor-not-allowed border border-outline-variant/60'
             }`}
             title={!isDraftSelected && hasSelection ? 'Chỉ được xóa hóa đơn ở trạng thái Bản Nháp' : ''}
           >
-            <span className="material-symbols-outlined text-sm">delete</span>
+            <span className="material-symbols-outlined text-[16px]">delete</span>
             <span>Xóa</span>
           </button>
         </div>

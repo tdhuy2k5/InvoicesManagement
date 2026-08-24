@@ -39,6 +39,8 @@ export interface InvoicePrintModalProps {
   signedBy?: string | null;
   signedAt?: string | null;
   originalInvoiceId?: string | null;
+  originalInvoiceNumber?: string | null;
+  originalIssueDate?: string | null;
   taxAuthorityCode?: string | null;
 }
 
@@ -78,9 +80,12 @@ export const InvoicePrintModal: React.FC<InvoicePrintModalProps> = ({
   signedBy,
   signedAt,
   originalInvoiceId,
+  originalInvoiceNumber,
+  originalIssueDate,
 }) => {
   const [zoomLevel, setZoomLevel] = useState<number>(100);
   const [copyType, setCopyType] = useState<'LIEN_1' | 'LIEN_2' | 'LIEN_3'>('LIEN_1');
+  const [isDownloading, setIsDownloading] = useState<boolean>(false);
 
   // Handle ESC key to close
   useEffect(() => {
@@ -103,9 +108,17 @@ export const InvoicePrintModal: React.FC<InvoicePrintModalProps> = ({
     window.print();
   };
 
-  const handleDownloadPdf = () => {
-    const url = invoiceApi.getPdfDownloadUrl(invoiceId, true);
-    window.open(url, '_blank');
+  const handleDownloadPdf = async () => {
+    if (isDownloading) return;
+    setIsDownloading(true);
+    try {
+      await invoiceApi.downloadPdf(invoiceId, invoiceNumber);
+    } catch {
+      const url = invoiceApi.getPdfDownloadUrl(invoiceId, true);
+      window.open(url, '_blank');
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   return (
@@ -203,11 +216,23 @@ export const InvoicePrintModal: React.FC<InvoicePrintModalProps> = ({
 
             <button
               type="button"
+              disabled={isDownloading}
               onClick={handleDownloadPdf}
-              className="px-3 py-1.5 bg-surface text-primary border border-outline rounded-lg text-xs font-semibold hover:bg-surface-container-low transition flex items-center gap-1.5"
+              className={`px-3 py-1.5 bg-surface text-primary border border-outline rounded-lg text-xs font-semibold hover:bg-surface-container-low transition flex items-center gap-1.5 ${
+                isDownloading ? 'opacity-70 cursor-wait' : ''
+              }`}
             >
-              <span className="material-symbols-outlined text-[16px]">download</span>
-              <span>Tải PDF</span>
+              {isDownloading ? (
+                <>
+                  <span className="w-3.5 h-3.5 border-2 border-primary border-t-transparent rounded-full animate-spin"></span>
+                  <span>Đang Tạo PDF...</span>
+                </>
+              ) : (
+                <>
+                  <span className="material-symbols-outlined text-[16px]">download</span>
+                  <span>Tải PDF</span>
+                </>
+              )}
             </button>
 
             <button
@@ -256,6 +281,8 @@ export const InvoicePrintModal: React.FC<InvoicePrintModalProps> = ({
               signerName={signedBy || sellerName}
               signedAt={signedAt}
               originalInvoiceId={originalInvoiceId}
+              originalInvoiceNumber={originalInvoiceNumber}
+              originalIssueDate={originalIssueDate}
               taxAuthorityCode={taxAuthorityCode}
               status={status}
             />

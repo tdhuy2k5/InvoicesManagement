@@ -13,12 +13,7 @@ export interface UseInvoiceFilterOptions {
 }
 
 /**
- * Custom Hook: useInvoiceFilter
- * Thin wiring adapter connecting UI to Backend Core InvoiceService.searchInvoices & InvoiceService.getInvoicesList
- * Workflows:
- * - searchInvoices (InvoiceService.searchInvoices)
- * - filterInvoices (InvoiceService.getInvoicesList)
- * - validateDraftModification (StateMachineGuard.validateDraftModification)
+ * Hook for managing invoice list filtering, search query, date ranges, and status tabs.
  */
 export function useInvoiceFilter(options: UseInvoiceFilterOptions = {}) {
   const { invoices, navigate, deleteDraftInvoice, showToast } = useInvoice();
@@ -236,6 +231,20 @@ export function useInvoiceFilter(options: UseInvoiceFilterOptions = {}) {
     }
   }, [selectedInvoice, invoices, deleteDraftInvoice, showToast]);
 
+  const handleReplaceInvoice = useCallback(() => {
+    if (!selectedInvoice) {
+      showToast('warning', 'Chưa Chọn Hóa Đơn', 'Vui lòng chọn một hóa đơn để lập hóa đơn thay thế.');
+      return;
+    }
+    const target = invoices.find((i) => String(i.id) === String(selectedInvoice.id)) || selectedInvoice;
+    try {
+      stateGuard.validateReplacementEligibility(target.status, target.originalInvoiceId);
+      navigate('/invoices/:id/replace', { id: target.id });
+    } catch (err: any) {
+      showToast('error', 'Không Hợp Lệ', err?.message || 'Chỉ hóa đơn ở trạng thái Đã Phát Hành (ISSUED) mới có thể thay thế.');
+    }
+  }, [selectedInvoice, invoices, navigate, showToast]);
+
   return {
     currentStatus,
     searchTerm,
@@ -269,6 +278,7 @@ export function useInvoiceFilter(options: UseInvoiceFilterOptions = {}) {
     handleViewDetail,
     handleEditDraft,
     handleDeleteDraft,
+    handleReplaceInvoice,
     stateGuard,
   };
 }

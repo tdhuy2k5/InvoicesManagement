@@ -61,6 +61,7 @@ export const InvoiceListPage: React.FC = () => {
     handleViewDetail,
     handleEditDraft: handleEditDraftFromFilter,
     handleDeleteDraft: handleDeleteDraftFromFilter,
+    handleReplaceInvoice: handleReplaceInvoiceFromFilter,
   } = useInvoiceFilter();
 
   // Pagination State
@@ -164,7 +165,7 @@ export const InvoiceListPage: React.FC = () => {
     <div className="min-h-screen bg-background text-on-surface flex flex-col font-sans">
       {/* Global Header */}
       <GlobalHeader
-        appName="AuditorPro Hóa Đơn"
+        appName="exportInvoice"
         activeNav="invoices"
         onNavigateToInvoiceList={() => navigate('/invoices')}
         onNavigateToCreateInvoice={() => navigate('/invoices/new')}
@@ -243,6 +244,7 @@ export const InvoiceListPage: React.FC = () => {
             }}
             onViewDetail={() => handleViewDetail()}
             onEditDraft={() => handleEditDraftFromFilter()}
+            onReplaceInvoice={() => handleReplaceInvoiceFromFilter()}
             onDeleteDraft={() => {
               if (selectedInvoice && selectedInvoice.status === 'DRAFT') {
                 setTargetDeleteInvoice(selectedInvoice);

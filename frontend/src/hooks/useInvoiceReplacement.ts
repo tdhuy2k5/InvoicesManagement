@@ -7,12 +7,7 @@ import { InvoiceEntity } from '../mockData';
 const stateGuard = new StateMachineGuard();
 
 /**
- * Custom Hook: useInvoiceReplacement
- * Thin wiring adapter connecting UI to Backend Core InvoiceService and StateMachineGuard replacement workflows
- * Workflows:
- * - getInvoiceById (InvoiceService.getInvoiceById)
- * - validateReplacementEligibility (StateMachineGuard.validateReplacementEligibility)
- * - replaceInvoice (InvoiceService.replaceInvoice)
+ * Hook for managing replacement invoice creation, form data prefill, and 1-level depth-cap validation.
  */
 export function useInvoiceReplacement(originalInvoiceId?: string) {
   const { getInvoiceById, replaceInvoice, navigate, showToast } = useInvoice();
@@ -82,7 +77,7 @@ export function useInvoiceReplacement(originalInvoiceId?: string) {
 
   // Execute replacement mutation
   const executeReplacement = useCallback(
-    async (formData: InvoiceFormData): Promise<InvoiceEntity | undefined> => {
+    async (formData: InvoiceFormData, agreementMinutes?: string): Promise<InvoiceEntity | undefined> => {
       if (!originalInvoice) {
         setValidationError('Không tìm thấy hóa đơn gốc.');
         return;
@@ -104,7 +99,10 @@ export function useInvoiceReplacement(originalInvoiceId?: string) {
           return;
         }
 
-        const replacement = await replaceInvoice(originalInvoice.id, formData);
+        const replacement = await replaceInvoice(originalInvoice.id, {
+          ...formData,
+          agreementMinutes,
+        });
         navigate('/invoices/:id', { id: String(replacement.id) });
         return replacement;
       } catch (err: any) {

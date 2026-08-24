@@ -140,8 +140,7 @@ export class InvoiceService {
   }
 
   /**
-   * Workflow: createDraftInvoice
-   * Orchestrates draft invoice validation, calculation, sequencing, and creation
+   * Creates a new draft invoice with item validation and financial totals calculation.
    */
   async createDraftInvoice(dto: CreateInvoiceDTO): Promise<InvoiceResponseDTO> {
     if (!dto.customerName || !dto.customerName.trim()) {
@@ -218,8 +217,7 @@ export class InvoiceService {
   }
 
   /**
-   * Workflow: getInvoices (List)
-   * Retrieves paginated list of invoices with optional status/date filters
+   * Retrieves a paginated list of invoices with optional status and date filters.
    */
   async getInvoicesList(query: GetInvoicesQueryDTO): Promise<PaginatedInvoicesResponseDTO> {
     const page = Math.max(1, query.page || 1);
@@ -266,8 +264,7 @@ export class InvoiceService {
   }
 
   /**
-   * Workflow: getInvoiceById
-   * Retrieves a single invoice by ID, ensuring existence or throwing INVOICE_NOT_FOUND
+   * Retrieves a single invoice by its unique identifier.
    */
   async getInvoiceById(id: string | number): Promise<InvoiceResponseDTO> {
     const parsedId = this.parseId(id);
@@ -281,8 +278,7 @@ export class InvoiceService {
   }
 
   /**
-   * Workflow: updateDraftInvoice
-   * Orchestrates draft invoice update with line item replacement and recalculation
+   * Updates an existing draft invoice and recalculates financial amounts.
    */
   async updateDraftInvoice(id: string | number, dto: UpdateInvoiceDTO): Promise<InvoiceResponseDTO> {
     const parsedId = this.parseId(id);
@@ -344,8 +340,7 @@ export class InvoiceService {
   }
 
   /**
-   * Workflow: deleteDraftInvoice
-   * Deletes a draft invoice and associated line items, ensuring status is DRAFT
+   * Deletes a draft invoice and its associated line items.
    */
   async deleteDraftInvoice(id: string | number): Promise<DeleteResponseDTO> {
     const parsedId = this.parseId(id);
@@ -366,8 +361,7 @@ export class InvoiceService {
   }
 
   /**
-   * Workflow: cloneInvoice
-   * Clones customer and items from existing invoice into a new DRAFT invoice with new sequence number
+   * Clones customer and item details into a newly created draft invoice.
    */
   async cloneInvoice(id: string | number): Promise<InvoiceResponseDTO> {
     const parsedId = this.parseId(id);
@@ -426,8 +420,7 @@ export class InvoiceService {
   }
 
   /**
-   * Workflow: issueInvoice
-   * Orchestrates invoice issue transition, allocates official sequence number, sets issueDate = now(), and manages PDF cache
+   * Issues a draft invoice, allocates an official sequence number, and generates a tax authority code.
    */
   async issueInvoice(id: string | number): Promise<InvoiceResponseDTO> {
     const parsedId = this.parseId(id);
@@ -480,8 +473,7 @@ export class InvoiceService {
   }
 
   /**
-   * Workflow: cancelInvoice
-   * Orchestrates transition of ISSUED invoice to CANCELED with audit reason & agreement minutes
+   * Cancels an issued invoice with a required cancellation reason and optional agreement minutes.
    */
   async cancelInvoice(id: string | number, dto: CancelInvoiceDTO): Promise<InvoiceResponseDTO> {
     const parsedId = this.parseId(id);
@@ -514,8 +506,7 @@ export class InvoiceService {
   }
 
   /**
-   * Workflow: replaceInvoice
-   * Orchestrates atomic replacement of root ISSUED invoice with new replacement invoice
+   * Creates a replacement invoice and atomically marks the original invoice as REPLACED (Decree 123).
    */
   async replaceInvoice(id: string | number, dto: ReplaceInvoiceDTO): Promise<InvoiceResponseDTO> {
     const parsedId = this.parseId(id);
@@ -584,8 +575,7 @@ export class InvoiceService {
   }
 
   /**
-   * Workflow: searchInvoices
-   * Orchestrates multi-field indexed search with validation and pagination
+   * Searches invoices across multiple indexed criteria (status, customer, tax code, invoice number).
    */
   async searchInvoices(query: SearchInvoicesQueryDTO): Promise<PaginatedInvoicesResponseDTO> {
     const page = Math.max(1, query.page || 1);

@@ -55,6 +55,8 @@ export interface InvoiceModel {
   cancelReason?: string | null;
   issueDate?: Date | null;
   originalInvoiceId?: string | number | null;
+  originalInvoiceNumber?: string | null;
+  originalIssueDate?: Date | string | null;
   replacedById?: string | number | null;
   createdAt: Date;
   updatedAt: Date;

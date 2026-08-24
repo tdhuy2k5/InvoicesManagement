@@ -54,7 +54,7 @@ InvoiceManagement/
 │   │   ├── config/           # Prisma Client Configuration (prisma.ts)
 │   │   ├── app.ts            # Express Application setup
 │   │   ├── server.ts         # HTTP Server Entry Point (Port 5000)
-│   │   └── __tests__/        # Bộ 44 Unit Tests & API Integration Tests
+│   │   └── __tests__/        # Bộ 52 Unit Tests & API Integration Tests
 │
 ├── frontend/                 # Toàn bộ mã nguồn giao diện React (Vite SPA)
 │   ├── src/
@@ -90,6 +90,19 @@ stateDiagram-v2
   - `customerTaxCode` (Index tìm kiếm nhanh theo MST doanh nghiệp)
   - `issueDate`, `createdAt` (Index lọc theo khoảng thời gian)
   - Composite Index `(status, issueDate)` và `(status, createdAt)`
+
+### 4. Dữ Liệu Mẫu Có Sẵn (Seed Data Overview)
+Hệ thống tự động nạp sẵn **7 hóa đơn mẫu** phản ánh đầy đủ các nghiệp vụ thực tế:
+
+| # | Số hóa đơn | Ký hiệu | Trạng thái | Đơn vị người mua | Tổng tiền (VNĐ) | Mục đích kiểm thử |
+|---|---|:---:|:---:|---|:---:|---|
+| 1 | `1C26TAA-0000001` | `1C26TAA` | 🟢 **ISSUED** | CÔNG TY TNHH GIẢI PHÁP SỐ TOÀN CẦU | 27.500.000 ₫ | Test In ấn, Tải PDF, Lập HĐ thay thế |
+| 2 | `1C26TAA-0000002` | `1C26TAA` | 🟢 **ISSUED** | CÔNG TY CP ĐẦU TƯ VÀ XÂY DỰNG BÌNH MINH | 51.840.000 ₫ | Test Thuế suất ưu đãi 8% |
+| 3 | `1C26TAA-0000003` | `1C26TAA` | 🟢 **ISSUED** | CÔNG TY TNHH DỊCH VỤ SỐ HOÀNG GIA | 20.350.000 ₫ | Test HĐ Dịch vụ Cloud VPS |
+| 4 | `1C26TAA-0000004` | `1C26TAA` | 🟢 **ISSUED** | CÔNG TY CP THƯƠNG MẠI & XNK AN PHÁT | 52.800.000 ₫ | Test HĐ Thiết bị Camera AI |
+| 5 | `1C26TAA-0000005` | `1C26TAA` | 🟢 **ISSUED** | TẬP ĐOÀN CN & TRUYỀN THÔNG ĐÔNG NAM Á | 198.770.000 ₫ | **Test in ấn & xuất PDF 18 mục (nhiều trang)** |
+| 6 | `NHAP-A8F2K` | `1C26TAA` | 🟡 **DRAFT** | TẬP ĐOÀN CN VIỄN THÔNG SAO MAI | 16.500.000 ₫ | Test Sửa nháp, Xóa nháp, Ký số phát hành |
+| 7 | `1C26TAA-0000006` | `1C26TAA` | 🔴 **CANCELED**| CÔNG TY TNHH THIẾT BỊ Y TẾ HÒA BÌNH | 8.800.000 ₫ | Minh họa tính năng Hủy HĐ (kèm lý do) |
 
 ---
 
@@ -144,7 +157,7 @@ docker compose up -d --build
 ## 🧪 5. Kiểm Thử (Testing & Postman)
 
 ### 1. Chạy Tự Động Toàn Bộ Unit Test & API Integration Test
-Dự án được trang bị **44 test cases** kiểm thử toàn diện:
+Dự án được trang bị **52 test cases** kiểm thử toàn diện:
 ```bash
 # Chạy toàn bộ tests
 npm test
@@ -180,15 +193,15 @@ npm run test:coverage
 
 1. **Khó khăn 1: Đảm bảo tính toàn vẹn trạng thái hóa đơn theo Nghị định 123**
    - *Vấn đề:* Hóa đơn đã ký không được phép chỉnh sửa hay xóa; việc hủy hóa đơn bắt buộc phải có biên bản/lý do; hóa đơn thay thế chỉ được thay thế 1 cấp (không được thay thế một hóa đơn vốn đã là hóa đơn thay thế).
-   - *Giải pháp:* Tách riêng module [StateMachineGuard.ts](file:///d:/Documents/InvoiceManagement/src/services/StateMachineGuard.ts) áp dụng nguyên lý Single Responsibility Principle (SRP) để kiểm soát nghiêm ngặt trước mọi thao tác cập nhật.
+   - *Giải pháp:* Tách riêng module [StateMachineGuard.ts](file:///d:/Documents/InvoiceManagement/backend/src/services/StateMachineGuard.ts) áp dụng nguyên lý Single Responsibility Principle (SRP) để kiểm soát nghiêm ngặt trước mọi thao tác cập nhật.
 
 2. **Khó khăn 2: Tránh xung đột số hóa đơn (Concurrency Sequence) khi phát hành đồng thời**
-   - *Vấn đề:* Nếu nhiều người cùng ký phát hành hóa đơn cùng lúc, việc sinh số hóa đơn dạng `HD-YYYY-00001` có thể bị trùng lặp.
-   - *Giải pháp:* Sử dụng PostgreSQL Sequence nguyên tử (`SELECT nextval('invoice_number_seq')`) kết hợp Unique Constraint `(zone, sequenceNumber)` trong Database.
+   - *Vấn đề:* Nếu nhiều người cùng ký phát hành hóa đơn cùng lúc, việc sinh số hóa đơn dạng `1C26TAA-0000001` có thể bị trùng lặp.
+   - *Giải pháp:* Sử dụng PostgreSQL Sequence nguyên tử (`SELECT nextval('Invoice_sequenceNumber_seq')`) kết hợp Unique Constraint `(zone, sequenceNumber)` trong Database.
 
 3. **Khó khăn 3: Hiệu năng sinh file PDF hóa đơn**
    - *Vấn đề:* Việc khởi động trình duyệt không đầu (Headless Chromium) với Puppeteer mỗi lần người dùng bấm xem hóa đơn gây tốn CPU và độ trễ cao.
-   - *Giải pháp:* Thiết kế cơ chế **Disk Cache** trong [PdfService.ts](file:///d:/Documents/InvoiceManagement/src/services/PdfService.ts). File PDF sau khi sinh lần đầu sẽ được lưu vào bộ nhớ đệm; chỉ khi trạng thái hóa đơn thay đổi (ví dụ bị Hủy) thì cache mới tự động bị vô hiệu hóa (`invalidatePdfCache`).
+   - *Giải pháp:* Thiết kế cơ chế **Disk Cache** trong [PdfService.ts](file:///d:/Documents/InvoiceManagement/backend/src/services/PdfService.ts). File PDF sau khi sinh lần đầu sẽ được lưu vào bộ nhớ đệm; chỉ khi trạng thái hóa đơn thay đổi (ví dụ bị Hủy) thì cache mới tự động bị vô hiệu hóa (`invalidatePdfCache`).
 
 4. **Khó khăn 4: Khả năng mở rộng và viết Unit Test độc lập**
    - *Vấn đề:* Nếu Service gọi trực tiếp Database hay ORM thì việc viết Unit Test sẽ bắt buộc phải dựng Database, khiến test chạy chậm và dễ lỗi môi trường.

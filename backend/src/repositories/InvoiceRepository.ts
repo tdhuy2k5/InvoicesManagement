@@ -61,6 +61,8 @@ export class InvoiceRepository implements IInvoiceRepository {
       cancelReason: record.cancelReason,
       issueDate: record.issueDate,
       originalInvoiceId: record.originalInvoiceId,
+      originalInvoiceNumber: record.originalInvoice?.invoiceNumber || (record.originalInvoiceNumber ?? null),
+      originalIssueDate: record.originalInvoice?.issueDate || (record.originalIssueDate ?? null),
       replacedById: record.replacedById,
       createdAt: record.createdAt,
       updatedAt: record.updatedAt,
@@ -77,8 +79,7 @@ export class InvoiceRepository implements IInvoiceRepository {
   }
 
   /**
-   * Workflow: createDraftInvoice
-   * Persists invoice and nested line items to PostgreSQL via Prisma
+   * Inserts a new invoice record and nested items into PostgreSQL.
    */
   async createInvoice(data: CreateInvoiceModelInput): Promise<InvoiceModel> {
     const created = await (this.prisma as any).invoice.create({
@@ -129,8 +130,7 @@ export class InvoiceRepository implements IInvoiceRepository {
   }
 
   /**
-   * Workflow: getInvoices
-   * Executes paginated Prisma query with filters and sorting against PostgreSQL
+   * Queries paginated invoices matching filter criteria.
    */
   async findManyInvoices(filter: FindManyInvoicesInput): Promise<{ items: InvoiceModel[]; total: number }> {
     const where: any = {};
@@ -158,7 +158,18 @@ export class InvoiceRepository implements IInvoiceRepository {
         skip,
         take,
         orderBy: { createdAt: 'desc' },
-        include: { items: true },
+        include: {
+          items: true,
+          originalInvoice: {
+            select: {
+              id: true,
+              invoiceNumber: true,
+              issueDate: true,
+              zone: true,
+              sequenceNumber: true,
+            },
+          },
+        },
       }),
       (this.prisma as any).invoice.count({ where }),
     ]);
@@ -170,14 +181,24 @@ export class InvoiceRepository implements IInvoiceRepository {
   }
 
   /**
-   * Workflow: getInvoiceById
-   * Executes Prisma findUnique query with items included
+   * Finds a unique invoice by its ID.
    */
   async findInvoiceById(id: number | string): Promise<InvoiceModel | null> {
     const stringId = this.parseId(id);
     const record = await (this.prisma as any).invoice.findUnique({
       where: { id: stringId },
-      include: { items: true },
+      include: {
+        items: true,
+        originalInvoice: {
+          select: {
+            id: true,
+            invoiceNumber: true,
+            issueDate: true,
+            zone: true,
+            sequenceNumber: true,
+          },
+        },
+      },
     });
 
     if (!record) {
@@ -188,8 +209,7 @@ export class InvoiceRepository implements IInvoiceRepository {
   }
 
   /**
-   * Workflow: updateDraftInvoice
-   * Replaces line items in a database transaction and updates invoice headers
+   * Atomically replaces line items and updates invoice header in a transaction.
    */
   async replaceDraftItemsAndUpdate(
     id: number | string,
@@ -248,13 +268,12 @@ export class InvoiceRepository implements IInvoiceRepository {
   }
 
   /**
-   * Workflow: deleteDraftInvoice
-   * Physically deletes invoice record and cascaded line items from database via Prisma
+   * Deletes an invoice and cascades delete to all associated items.
    */
   async deleteInvoice(id: number | string): Promise<InvoiceModel> {
     const stringId = this.parseId(id);
 
-    // With onDelete: Cascade configured in Prisma schema, deleting invoice will cascade delete items
+    // Cascade delete configured in Prisma schema
     const deleted = await (this.prisma as any).invoice.delete({
       where: { id: stringId },
       include: { items: true },
@@ -264,8 +283,7 @@ export class InvoiceRepository implements IInvoiceRepository {
   }
 
   /**
-   * Workflow: issueInvoice / cancelInvoice
-   * Updates invoice status, timestamps, and transition metadata in PostgreSQL
+   * Updates invoice status, timestamps, and transition metadata.
    */
   async updateInvoiceStatus(
     id: number | string,
@@ -307,8 +325,7 @@ export class InvoiceRepository implements IInvoiceRepository {
   }
 
   /**
-   * Workflow: issueInvoiceWithSequence
-   * Atomically transitions DRAFT invoice to ISSUED, assigns official sequence & invoice number, CQT code, and issue date
+   * Transitions invoice to ISSUED, assigning sequence number, invoice number, and tax authority code.
    */
   async issueInvoiceWithSequence(
     id: number | string,
@@ -335,8 +352,7 @@ export class InvoiceRepository implements IInvoiceRepository {
   }
 
   /**
-   * Workflow: replaceInvoice
-   * Atomic PostgreSQL transaction: inserts replacement invoice and marks original as REPLACED
+   * Atomically executes replacement: creates replacement invoice and marks original as REPLACED.
    */
   async executeReplacementTransaction(
     originalId: number | string,
@@ -412,8 +428,7 @@ export class InvoiceRepository implements IInvoiceRepository {
   }
 
   /**
-   * Workflow: searchInvoices
-   * Executes high-performance indexed search (sequenceNumber, customerTaxCode, zone+seq, date ranges)
+   * Searches invoices using multi-column indexed queries.
    */
   async searchInvoicesRepo(
     criteria: InvoiceSearchCriteriaInput

@@ -39,8 +39,7 @@ export class InvoiceCalculationService {
   }
 
   /**
-   * Workflow: calculateInvoiceTotals
-   * Calculates line totals, totalAmount, and vatAmount with strict rounding
+   * Calculates subtotal, VAT amount, and grand total with financial rounding.
    */
   calculateInvoiceTotals(items: CreateInvoiceItemDTO[], vatRate: number): CalculatedTotals {
     if (!items || items.length === 0) {

@@ -16,7 +16,7 @@ export interface GlobalHeaderProps {
  * - `navigateToCreateInvoice` -> `InvoiceCreate`
  */
 export const GlobalHeader: React.FC<GlobalHeaderProps> = ({
-  appName = 'AuditorPro',
+  appName = 'exportInvoice',
   activeNav = 'invoices',
   onNavigateToInvoiceList,
   onNavigateToCreateInvoice,

@@ -5,11 +5,7 @@ import { useInvoice } from '../context/InvoiceContext';
 const stateGuard = new StateMachineGuard();
 
 /**
- * Custom Hook: useIssueInvoice
- * Thin wiring adapter connecting UI to StateMachineGuard and InvoiceService issue workflow
- * Workflows:
- * - openIssueModal (StateMachineGuard.validateIssueTransition)
- * - confirmIssueInvoice (InvoiceService.issueInvoice)
+ * Hook for managing the issue invoice modal and transition from DRAFT to ISSUED.
  */
 export function useIssueInvoice(invoiceId?: string, currentStatus?: string) {
   const { issueInvoice, showToast } = useInvoice();

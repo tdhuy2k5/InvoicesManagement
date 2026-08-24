@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useInvoice } from '../context/InvoiceContext';
 import { useInvoiceReplacement } from '../hooks/useInvoiceReplacement';
 import { GlobalHeader } from '../components/GlobalHeader';
 import { InvoiceReplacementBanner } from '../components/InvoiceReplacementBanner';
-import { InvoiceForm } from '../components/InvoiceForm';
+import { InvoiceForm, InvoiceFormData } from '../components/InvoiceForm';
+import { InvoiceReplaceConfirmModal } from '../components/InvoiceReplaceConfirmModal';
 
 /**
  * InvoiceReplacePage (`InvoiceReplace`)
@@ -12,15 +13,7 @@ import { InvoiceForm } from '../components/InvoiceForm';
  * - GlobalHeader
  * - InvoiceReplacementBanner
  * - InvoiceForm (mode="REPLACE")
- * 
- * Enforces Visibility & Transition Guard:
- * `invoice.status == "ISSUED" && invoice.originalInvoiceId == null`
- * (Strict 1-level depth cap invariant AD-3 / FR-7 and atomic replacement AD-6).
- * 
- * Wired with Backend Core:
- * - InvoiceService.getInvoiceById via useInvoiceReplacement
- * - InvoiceService.replaceInvoice via useInvoiceReplacement
- * - StateMachineGuard via useInvoiceReplacement
+ * - InvoiceReplaceConfirmModal (Dual-Party Agreement & Decree 123 Protocol)
  */
 export const InvoiceReplacePage: React.FC = () => {
   const { routeParams, navigate } = useInvoice();
@@ -35,11 +28,14 @@ export const InvoiceReplacePage: React.FC = () => {
     executeReplacement,
   } = useInvoiceReplacement(invoiceId);
 
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [pendingFormData, setPendingFormData] = useState<InvoiceFormData | null>(null);
+
   if (!originalInvoice) {
     return (
       <div className="min-h-screen bg-background text-on-surface flex flex-col font-sans">
         <GlobalHeader
-          appName="AuditorPro Hóa Đơn"
+          appName="exportInvoice"
           activeNav="invoices"
           onNavigateToInvoiceList={() => navigate('/invoices')}
           onNavigateToCreateInvoice={() => navigate('/invoices/new')}
@@ -70,7 +66,7 @@ export const InvoiceReplacePage: React.FC = () => {
     return (
       <div className="min-h-screen bg-background text-on-surface flex flex-col font-sans">
         <GlobalHeader
-          appName="AuditorPro Hóa Đơn"
+          appName="exportInvoice"
           activeNav="invoices"
           onNavigateToInvoiceList={() => navigate('/invoices')}
           onNavigateToCreateInvoice={() => navigate('/invoices/new')}
@@ -120,11 +116,22 @@ export const InvoiceReplacePage: React.FC = () => {
     navigate('/invoices/:id', { id: originalInvoice.id });
   };
 
+  const handleFormSubmit = (_id: string | number, data: InvoiceFormData) => {
+    setPendingFormData(data);
+    setIsConfirmModalOpen(true);
+  };
+
+  const handleConfirmReplacement = async (agreementMinutes?: string) => {
+    if (!pendingFormData) return;
+    await executeReplacement(pendingFormData, agreementMinutes);
+    setIsConfirmModalOpen(false);
+  };
+
   return (
     <div className="min-h-screen bg-background text-on-surface flex flex-col font-sans">
       {/* Global Header */}
       <GlobalHeader
-        appName="AuditorPro Hóa Đơn"
+        appName="exportInvoice"
         activeNav="invoices"
         onNavigateToInvoiceList={() => navigate('/invoices')}
         onNavigateToCreateInvoice={() => navigate('/invoices/new')}
@@ -180,13 +187,27 @@ export const InvoiceReplacePage: React.FC = () => {
             initialData={initialFormData}
             isSubmitting={isSubmitting}
             validationError={validationError}
-            onSubmitReplace={(id, data) => executeReplacement(data)}
+            onSubmitReplace={handleFormSubmit}
             onCancelForm={handleCancel}
           />
         </div>
       </main>
+
+      {/* Interactive Dual-Party Agreement Confirmation Modal */}
+      <InvoiceReplaceConfirmModal
+        isOpen={isConfirmModalOpen}
+        onClose={() => setIsConfirmModalOpen(false)}
+        onConfirm={handleConfirmReplacement}
+        originalInvoiceNumber={originalInvoice.invoiceNumber}
+        customerName={originalInvoice.customerName}
+        originalTotalAmount={originalInvoice.totalAmount}
+        newTotalAmount={pendingFormData?.totalAmount || originalInvoice.totalAmount}
+        isSubmitting={isSubmitting}
+        errorMessage={validationError}
+      />
     </div>
   );
 };
 
 export default InvoiceReplacePage;
+

@@ -14,15 +14,12 @@ const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
-  console.log('🌱 Bắt đầu nạp dữ liệu mẫu vào PostgreSQL...');
+  console.log('[Seed] Seeding fresh sample invoice data...');
 
-  // Xóa sạch dữ liệu cũ để tránh trùng lặp
   await prisma.invoiceItem.deleteMany();
   await prisma.invoice.deleteMany();
 
-  console.log('🧹 Đã dọn dẹp các bảng Invoice và InvoiceItem.');
-
-  // 1. HÓA ĐƠN ĐÃ PHÁT HÀNH #1 (Dịch vụ phần mềm ERP)
+  // 1. HÓA ĐƠN ĐÃ PHÁT HÀNH #1 (ISSUED - Dịch vụ phần mềm ERP)
   const inv1 = await prisma.invoice.create({
     data: {
       templateCode: '01GTKT3/001',
@@ -32,6 +29,7 @@ async function main() {
       status: 'ISSUED',
       issueDate: new Date('2026-08-10T08:30:00.000Z'),
       taxDepartment: 'CỤC THUẾ TP. HÀ NỘI',
+      taxAuthorityCode: '00E26TAA88123401',
       sellerName: 'CÔNG TY CỔ PHẦN CÔNG NGHỆ VÀ TRUYỀN THÔNG ALPHA',
       sellerTaxCode: '0101234567',
       sellerAddress: 'Tầng 3, Tòa nhà Alpha, 123 Đường Công Nghệ, Cầu Giấy, Hà Nội',
@@ -59,7 +57,7 @@ async function main() {
             amount: new Prisma.Decimal(20000000),
           },
           {
-            description: 'Dịch vụ đào tạo và chuyển giao công nghệ',
+            description: 'Dịch vụ đào tạo và chuyển giao công nghệ cho nhân sự kế toán',
             unit: 'Buổi',
             quantity: new Prisma.Decimal(2),
             unitPrice: new Prisma.Decimal(2500000),
@@ -70,7 +68,7 @@ async function main() {
     },
   });
 
-  // 2. HÓA ĐƠN ĐÃ PHÁT HÀNH #2 (Thiết bị mạng & Máy chủ)
+  // 2. HÓA ĐƠN ĐÃ PHÁT HÀNH #2 (ISSUED - Thiết bị mạng & Máy chủ)
   const inv2 = await prisma.invoice.create({
     data: {
       templateCode: '01GTKT3/001',
@@ -80,20 +78,23 @@ async function main() {
       status: 'ISSUED',
       issueDate: new Date('2026-08-15T14:15:00.000Z'),
       taxDepartment: 'CỤC THUẾ TP. HÀ NỘI',
+      taxAuthorityCode: '00E26TAA88123402',
       sellerName: 'CÔNG TY CỔ PHẦN CÔNG NGHỆ VÀ TRUYỀN THÔNG ALPHA',
       sellerTaxCode: '0101234567',
       sellerAddress: 'Tầng 3, Tòa nhà Alpha, 123 Đường Công Nghệ, Cầu Giấy, Hà Nội',
       sellerPhone: '024 3838 9999',
+      sellerEmail: 'finance@alphatech.vn',
       sellerBankAccount: '19031234567890 - Techcombank (CN Thăng Long)',
       customerName: 'CÔNG TY CỔ PHẦN ĐẦU TƯ VÀ XÂY DỰNG BÌNH MINH',
       customerTaxCode: '0108889999',
       customerAddress: 'Số 88 Phố Huế, Phường Hàng Bài, Quận Hoàn Kiếm, Hà Nội',
       customerPhone: '0912 345 678',
       customerEmail: 'contact@binhminh-invest.vn',
+      customerBankAccount: '102003004005 - BIDV (CN Hà Nội)',
       paymentMethod: 'Chuyển khoản (TM/CK)',
       totalAmount: new Prisma.Decimal(48000000),
       vatAmount: new Prisma.Decimal(3840000),
-      vatRate: 8, // Áp dụng thuế ưu đãi 8%
+      vatRate: 8,
       notes: 'Bàn giao thiết bị phòng Server theo biên bản nghiệm thu số 08/BBNT',
       items: {
         create: [
@@ -116,19 +117,170 @@ async function main() {
     },
   });
 
-  // 3. HÓA ĐƠN BẢN NHÁP #3 (DRAFT - Khách hàng đang xem trước)
+  // 3. HÓA ĐƠN ĐÃ PHÁT HÀNH #3 (ISSUED - Dịch vụ Cloud VPS)
   const inv3 = await prisma.invoice.create({
     data: {
       templateCode: '01GTKT3/001',
       zone: '1C26TAA',
       sequenceNumber: 3,
       invoiceNumber: '1C26TAA-0000003',
+      status: 'ISSUED',
+      issueDate: new Date('2026-08-18T10:00:00.000Z'),
+      taxDepartment: 'CỤC THUẾ TP. HÀ NỘI',
+      taxAuthorityCode: '00E26TAA88123403',
+      sellerName: 'CÔNG TY CỔ PHẦN CÔNG NGHỆ VÀ TRUYỀN THÔNG ALPHA',
+      sellerTaxCode: '0101234567',
+      sellerAddress: 'Tầng 3, Tòa nhà Alpha, 123 Đường Công Nghệ, Cầu Giấy, Hà Nội',
+      sellerPhone: '024 3838 9999',
+      sellerEmail: 'finance@alphatech.vn',
+      sellerBankAccount: '19031234567890 - Techcombank (CN Thăng Long)',
+      customerName: 'CÔNG TY TNHH DỊCH VỤ SỐ HOÀNG GIA',
+      customerTaxCode: '0108765432',
+      customerAddress: 'Tòa nhà Royal City, 72A Nguyễn Trãi, Thanh Xuân, Hà Nội',
+      customerPhone: '0912 345 678',
+      customerEmail: 'finance@hoanggiadigital.com',
+      customerBankAccount: '0451000234567 - Vietcombank (CN Thành Công)',
+      paymentMethod: 'Chuyển khoản (TM/CK)',
+      totalAmount: new Prisma.Decimal(18500000),
+      vatAmount: new Prisma.Decimal(1850000),
+      vatRate: 10,
+      notes: 'Dịch vụ duy trì hạ tầng Cloud VPS và bảo mật hệ thống 6 tháng cuối năm 2026.',
+      items: {
+        create: [
+          {
+            description: 'Dịch vụ Cloud VPS High-Performance (8 vCPU / 32GB RAM / 500GB NVMe)',
+            unit: 'Tháng',
+            quantity: new Prisma.Decimal(6),
+            unitPrice: new Prisma.Decimal(2500000),
+            amount: new Prisma.Decimal(15000000),
+          },
+          {
+            description: 'Bản quyền SSL EV Wildcard & Dịch vụ tường lửa chống DDoS cao cấp',
+            unit: 'Gói',
+            quantity: new Prisma.Decimal(1),
+            unitPrice: new Prisma.Decimal(3500000),
+            amount: new Prisma.Decimal(3500000),
+          },
+        ],
+      },
+    },
+  });
+
+  // 4. HÓA ĐƠN ĐÃ PHÁT HÀNH #4 (ISSUED - Camera AI An Phát)
+  const inv4 = await prisma.invoice.create({
+    data: {
+      templateCode: '01GTKT3/001',
+      zone: '1C26TAA',
+      sequenceNumber: 4,
+      invoiceNumber: '1C26TAA-0000004',
+      status: 'ISSUED',
+      issueDate: new Date('2026-08-20T14:30:00.000Z'),
+      taxDepartment: 'CỤC THUẾ TP. HÀ NỘI',
+      taxAuthorityCode: '00E26TAA88123404',
+      sellerName: 'CÔNG TY CỔ PHẦN CÔNG NGHỆ VÀ TRUYỀN THÔNG ALPHA',
+      sellerTaxCode: '0101234567',
+      sellerAddress: 'Tầng 3, Tòa nhà Alpha, 123 Đường Công Nghệ, Cầu Giấy, Hà Nội',
+      sellerPhone: '024 3838 9999',
+      sellerEmail: 'finance@alphatech.vn',
+      sellerBankAccount: '19031234567890 - Techcombank (CN Thăng Long)',
+      customerName: 'CÔNG TY CỔ PHẦN THƯƠNG MẠI & XNK AN PHÁT',
+      customerTaxCode: '0107654321',
+      customerAddress: 'Số 15 Phố Huế, Phường Hàng Bài, Quận Hoàn Kiếm, Hà Nội',
+      customerPhone: '024 3943 1234',
+      customerEmail: 'anphat@anphattrading.vn',
+      customerBankAccount: '118000123456 - Vietinbank (CN Hoàn Kiếm)',
+      paymentMethod: 'Chuyển khoản (TM/CK)',
+      totalAmount: new Prisma.Decimal(48000000),
+      vatAmount: new Prisma.Decimal(4800000),
+      vatRate: 10,
+      notes: 'Lắp đặt và triển khai hệ thống Camera Giám sát AI thông minh theo Hợp đồng số 20/2026/HĐ-AP.',
+      items: {
+        create: [
+          {
+            description: 'Camera AI thông minh nhận diện khuôn mặt & biển số 4K UltraHD',
+            unit: 'Bộ',
+            quantity: new Prisma.Decimal(4),
+            unitPrice: new Prisma.Decimal(9500000),
+            amount: new Prisma.Decimal(38000000),
+          },
+          {
+            description: 'Đầu ghi hình mạng NVR 32 kênh hỗ trợ AI Storage 8TB',
+            unit: 'Chiếc',
+            quantity: new Prisma.Decimal(1),
+            unitPrice: new Prisma.Decimal(10000000),
+            amount: new Prisma.Decimal(10000000),
+          },
+        ],
+      },
+    },
+  });
+
+  // 5. HÓA ĐƠN ĐÃ PHÁT HÀNH #5 (ISSUED - HÓA ĐƠN LỚN 18 MỤC ĐỂ TEST IN ẤN & XUẤT PDF NHIỀU TRANG)
+  const inv5 = await prisma.invoice.create({
+    data: {
+      templateCode: '01GTKT3/001',
+      zone: '1C26TAA',
+      sequenceNumber: 5,
+      invoiceNumber: '1C26TAA-0000005',
+      status: 'ISSUED',
+      issueDate: new Date('2026-08-22T15:30:00.000Z'),
+      taxDepartment: 'CỤC THUẾ TP. HÀ NỘI',
+      taxAuthorityCode: '00E26TAA88123405',
+      sellerName: 'CÔNG TY CỔ PHẦN CÔNG NGHỆ VÀ TRUYỀN THÔNG ALPHA',
+      sellerTaxCode: '0101234567',
+      sellerAddress: 'Tầng 3, Tòa nhà Alpha, 123 Đường Công Nghệ, Cầu Giấy, Hà Nội',
+      sellerPhone: '024 3838 9999',
+      sellerEmail: 'finance@alphatech.vn',
+      sellerBankAccount: '19031234567890 - Techcombank (CN Thăng Long)',
+      customerName: 'TẬP ĐOÀN CÔNG NGHỆ VÀ TRUYỀN THÔNG ĐÔNG NAM Á',
+      customerTaxCode: '0109998888',
+      customerAddress: 'Tòa nhà Landmark 72, Đường Phạm Hùng, Phường Mễ Trì, Quận Nam Từ Liêm, Hà Nội',
+      customerPhone: '024 3789 9999',
+      customerEmail: 'finance@dongnama-group.vn',
+      customerBankAccount: '0011004567890 - Vietcombank (Sở Giao Dịch)',
+      paymentMethod: 'Chuyển khoản (TM/CK)',
+      totalAmount: new Prisma.Decimal(258550000),
+      vatAmount: new Prisma.Decimal(25855000),
+      vatRate: 10,
+      notes: 'Bàn giao thiết bị và triển khai gói chuyển đổi số toàn diện theo Hợp đồng số 88/2026/HĐKT-DNA.',
+      items: {
+        create: [
+          { description: '1. Máy chủ chuyên dụng Server Dell PowerEdge R750xs (2x Xeon/64GB/4TB)', unit: 'Bộ', quantity: new Prisma.Decimal(2), unitPrice: new Prisma.Decimal(45000000), amount: new Prisma.Decimal(90000000) },
+          { description: '2. Tủ Rack chuyên dụng 42U chống ồn chuẩn Data Center', unit: 'Tủ', quantity: new Prisma.Decimal(1), unitPrice: new Prisma.Decimal(12000000), amount: new Prisma.Decimal(12000000) },
+          { description: '3. Switch trung tâm Cisco Catalyst 9200L 48 cổng PoE+ Layer 3', unit: 'Chiếc', quantity: new Prisma.Decimal(2), unitPrice: new Prisma.Decimal(18500000), amount: new Prisma.Decimal(37000000) },
+          { description: '4. Bộ định tuyến Router DrayTek Vigor3910 10Gbps Multi-WAN', unit: 'Chiếc', quantity: new Prisma.Decimal(1), unitPrice: new Prisma.Decimal(16500000), amount: new Prisma.Decimal(16500000) },
+          { description: '5. Bộ phát Wi-Fi chuyên dụng Aruba AP-515 chuẩn Wi-Fi 6', unit: 'Chiếc', quantity: new Prisma.Decimal(6), unitPrice: new Prisma.Decimal(4200000), amount: new Prisma.Decimal(25200000) },
+          { description: '6. Thiết bị tường lửa bảo mật Fortinet FortiGate 60F kèm License 1 năm', unit: 'Chiếc', quantity: new Prisma.Decimal(1), unitPrice: new Prisma.Decimal(19500000), amount: new Prisma.Decimal(19500000) },
+          { description: '7. Bộ lưu điện trực tuyến UPS SANTAK Online 3kVA / 2700W', unit: 'Bộ', quantity: new Prisma.Decimal(1), unitPrice: new Prisma.Decimal(14500000), amount: new Prisma.Decimal(14500000) },
+          { description: '8. Ổ cứng SSD Enterprise Kioxia 1.92TB NVMe Read-Intensive', unit: 'Chiếc', quantity: new Prisma.Decimal(4), unitPrice: new Prisma.Decimal(4800000), amount: new Prisma.Decimal(19200000) },
+          { description: '9. Thanh RAM Server Samsung DDR4 32GB ECC Registered 3200MHz', unit: 'Thanh', quantity: new Prisma.Decimal(4), unitPrice: new Prisma.Decimal(2200000), amount: new Prisma.Decimal(8800000) },
+          { description: '10. Cáp mạng đúc sẵn Cat6 UTP CommScope thùng 305 mét', unit: 'Cuộn', quantity: new Prisma.Decimal(3), unitPrice: new Prisma.Decimal(2100000), amount: new Prisma.Decimal(6300000) },
+          { description: '11. Hạt mạng RJ45 Cat6 bọc kim chống nhiễu cao cấp (Hộp 100 cái)', unit: 'Hộp', quantity: new Prisma.Decimal(2), unitPrice: new Prisma.Decimal(450000), amount: new Prisma.Decimal(900000) },
+          { description: '12. Thanh đấu nối Patch Panel Cat6 24 cổng AMP/CommScope', unit: 'Chiếc', quantity: new Prisma.Decimal(2), unitPrice: new Prisma.Decimal(850000), amount: new Prisma.Decimal(1700000) },
+          { description: '13. Dây nhảy mạng Patch Cord Cat6 1.5 mét đúc đầu sẵn', unit: 'Sợi', quantity: new Prisma.Decimal(48), unitPrice: new Prisma.Decimal(35000), amount: new Prisma.Decimal(1680000) },
+          { description: '14. Bản quyền hệ điều hành máy chủ Windows Server 2022 Standard 16 Core', unit: 'License', quantity: new Prisma.Decimal(2), unitPrice: new Prisma.Decimal(11500000), amount: new Prisma.Decimal(23000000) },
+          { description: '15. Phần mềm diệt virus máy chủ Kaspersky Endpoint Security Business 1 năm', unit: 'Gói', quantity: new Prisma.Decimal(1), unitPrice: new Prisma.Decimal(4500000), amount: new Prisma.Decimal(4500000) },
+          { description: '16. Dịch vụ lắp đặt, cấu hình hệ thống mạng VLAN, Routing và VPN', unit: 'Gói', quantity: new Prisma.Decimal(1), unitPrice: new Prisma.Decimal(6000000), amount: new Prisma.Decimal(6000000) },
+          { description: '17. Dịch vụ đào tạo và chuyển giao tài liệu vận hành hạ tầng', unit: 'Buổi', quantity: new Prisma.Decimal(2), unitPrice: new Prisma.Decimal(2000000), amount: new Prisma.Decimal(4000000) },
+          { description: '18. Dịch vụ bảo trì và hỗ trợ kỹ thuật On-site 24/7 (12 tháng)', unit: 'Gói', quantity: new Prisma.Decimal(1), unitPrice: new Prisma.Decimal(5000000), amount: new Prisma.Decimal(5000000) },
+        ],
+      },
+    },
+  });
+
+  // 6. HÓA ĐƠN BẢN NHÁP #6 (DRAFT - Khách hàng đang kiểm tra thông tin)
+  const inv6 = await prisma.invoice.create({
+    data: {
+      templateCode: '01GTKT3/001',
+      zone: '1C26TAA',
+      invoiceNumber: 'NHAP-A8F2K',
       status: 'DRAFT',
       taxDepartment: 'CỤC THUẾ TP. HÀ NỘI',
       sellerName: 'CÔNG TY CỔ PHẦN CÔNG NGHỆ VÀ TRUYỀN THÔNG ALPHA',
       sellerTaxCode: '0101234567',
       sellerAddress: 'Tầng 3, Tòa nhà Alpha, 123 Đường Công Nghệ, Cầu Giấy, Hà Nội',
       sellerPhone: '024 3838 9999',
+      sellerEmail: 'finance@alphatech.vn',
       sellerBankAccount: '19031234567890 - Techcombank (CN Thăng Long)',
       customerName: 'TẬP ĐOÀN CÔNG NGHỆ VIỄN THÔNG SAO MAI',
       customerTaxCode: '0301122334',
@@ -143,7 +295,7 @@ async function main() {
       items: {
         create: [
           {
-            description: 'Dịch vụ tư vấn hạ tầng đám mây và tối ưu hóa hệ thống',
+            description: 'Dịch vụ tư vấn hạ tầng đám mây và tối ưu hóa hệ thống AI Data Lake',
             unit: 'Tháng',
             quantity: new Prisma.Decimal(1),
             unitPrice: new Prisma.Decimal(15000000),
@@ -154,289 +306,48 @@ async function main() {
     },
   });
 
-  // 4. HÓA ĐƠN ĐÃ HỦY #4 (CANCELED - Hủy do sai thông tin MST)
-  const inv4 = await prisma.invoice.create({
-    data: {
-      templateCode: '01GTKT3/001',
-      zone: '1C26TAA',
-      sequenceNumber: 4,
-      invoiceNumber: '1C26TAA-0000004',
-      status: 'CANCELED',
-      issueDate: new Date('2026-08-05T10:00:00.000Z'),
-      taxDepartment: 'CỤC THUẾ TP. HÀ NỘI',
-      sellerName: 'CÔNG TY CỔ PHẦN CÔNG NGHỆ VÀ TRUYỀN THÔNG ALPHA',
-      sellerTaxCode: '0101234567',
-      sellerAddress: 'Tầng 3, Tòa nhà Alpha, 123 Đường Công Nghệ, Cầu Giấy, Hà Nội',
-      sellerPhone: '024 3838 9999',
-      sellerBankAccount: '19031234567890 - Techcombank (CN Thăng Long)',
-      customerName: 'CÔNG TY TNHH THƯƠNG MẠI HẢI ÂU (SAI MST)',
-      customerTaxCode: '0100000000',
-      customerEmail: 'haiau.trade@example.vn',
-      customerAddress: '12 Đường Láng, Đống Đa, Hà Nội',
-      paymentMethod: 'Tiền mặt (TM)',
-      totalAmount: new Prisma.Decimal(8000000),
-      vatAmount: new Prisma.Decimal(800000),
-      vatRate: 10,
-      notes: 'Hóa đơn đã bị hủy theo biên bản thỏa thuận hủy hóa đơn số 01/BBH-HA',
-      cancelReason: 'Nhập sai mã số thuế khách hàng và sai tên đơn vị người mua.',
-      items: {
-        create: [
-          {
-            description: 'Gia hạn dịch vụ sao lưu dữ liệu tự động Cloud Backup',
-            unit: 'Gói',
-            quantity: new Prisma.Decimal(1),
-            unitPrice: new Prisma.Decimal(8000000),
-            amount: new Prisma.Decimal(8000000),
-          },
-        ],
-      },
-    },
-  });
-
-  // 5. HÓA ĐƠN BỊ THAY THẾ #5 (REPLACED - Hóa đơn gốc)
-  const inv5 = await prisma.invoice.create({
-    data: {
-      templateCode: '01GTKT3/001',
-      zone: '1C26TAA',
-      sequenceNumber: 5,
-      invoiceNumber: '1C26TAA-0000005',
-      status: 'REPLACED',
-      issueDate: new Date('2026-08-18T09:00:00.000Z'),
-      taxDepartment: 'CỤC THUẾ TP. HÀ NỘI',
-      sellerName: 'CÔNG TY CỔ PHẦN CÔNG NGHỆ VÀ TRUYỀN THÔNG ALPHA',
-      sellerTaxCode: '0101234567',
-      sellerAddress: 'Tầng 3, Tòa nhà Alpha, 123 Đường Công Nghệ, Cầu Giấy, Hà Nội',
-      sellerPhone: '024 3838 9999',
-      sellerBankAccount: '19031234567890 - Techcombank (CN Thăng Long)',
-      customerName: 'CÔNG TY CỔ PHẦN DƯỢC PHẨM HOA SEN',
-      customerTaxCode: '0105556666',
-      customerEmail: 'ketoan@duochoasen.vn',
-      customerAddress: 'Số 10 Phố Cũ, Ba Đình, Hà Nội (Địa chỉ cũ)',
-      paymentMethod: 'Chuyển khoản (TM/CK)',
-      totalAmount: new Prisma.Decimal(12000000),
-      vatAmount: new Prisma.Decimal(1200000),
-      vatRate: 10,
-      notes: 'Hóa đơn bị thay thế do khách hàng thay đổi địa chỉ đăng ký kinh doanh mới',
-      items: {
-        create: [
-          {
-            description: 'Dịch vụ bảo trì phần mềm kế toán năm 2026',
-            unit: 'Năm',
-            quantity: new Prisma.Decimal(1),
-            unitPrice: new Prisma.Decimal(12000000),
-            amount: new Prisma.Decimal(12000000),
-          },
-        ],
-      },
-    },
-  });
-
-  // 6. HÓA ĐƠN THAY THẾ MỚI #6 (ISSUED - Thay thế cho #5)
-  const inv6 = await prisma.invoice.create({
+  // 7. HÓA ĐƠN ĐÃ HỦY #7 (CANCELED - Minh họa tính năng Hủy theo Nghị định 123)
+  const inv7 = await prisma.invoice.create({
     data: {
       templateCode: '01GTKT3/001',
       zone: '1C26TAA',
       sequenceNumber: 6,
       invoiceNumber: '1C26TAA-0000006',
-      status: 'ISSUED',
-      issueDate: new Date('2026-08-20T11:00:00.000Z'),
-      originalInvoiceId: inv5.id,
+      status: 'CANCELED',
+      issueDate: new Date('2026-08-05T10:00:00.000Z'),
       taxDepartment: 'CỤC THUẾ TP. HÀ NỘI',
+      taxAuthorityCode: '00E26TAA88123406',
       sellerName: 'CÔNG TY CỔ PHẦN CÔNG NGHỆ VÀ TRUYỀN THÔNG ALPHA',
       sellerTaxCode: '0101234567',
       sellerAddress: 'Tầng 3, Tòa nhà Alpha, 123 Đường Công Nghệ, Cầu Giấy, Hà Nội',
       sellerPhone: '024 3838 9999',
+      sellerEmail: 'finance@alphatech.vn',
       sellerBankAccount: '19031234567890 - Techcombank (CN Thăng Long)',
-      customerName: 'CÔNG TY CỔ PHẦN DƯỢC PHẨM HOA SEN',
-      customerTaxCode: '0105556666',
-      customerEmail: 'ketoan@duochoasen.vn',
-      customerAddress: 'Tòa nhà Lotus Tower, Số 99 Duy Tân, Cầu Giấy, Hà Nội (Địa chỉ mới cập nhật)',
-      paymentMethod: 'Chuyển khoản (TM/CK)',
-      totalAmount: new Prisma.Decimal(12000000),
-      vatAmount: new Prisma.Decimal(1200000),
-      vatRate: 10,
-      notes: `Hóa đơn này thay thế cho hóa đơn số ${inv5.invoiceNumber} ngày 18/08/2026 do cập nhật địa chỉ kinh doanh mới`,
+      customerName: 'CÔNG TY TNHH THIẾT BỊ Y TẾ HÒA BÌNH',
+      customerTaxCode: '0309871234',
+      customerEmail: 'contact@hoabinhmed.vn',
+      customerAddress: 'Số 102 Đường Võ Văn Kiệt, Quận 5, TP. HCM',
+      paymentMethod: 'Tiền mặt (TM)',
+      totalAmount: new Prisma.Decimal(8800000),
+      vatAmount: new Prisma.Decimal(0),
+      vatRate: 0,
+      notes: 'Hóa đơn đã bị hủy theo biên bản thỏa thuận hủy hóa đơn số 18/BB-HUY',
+      cancelReason: 'Nhập sai mã số thuế khách hàng và sai tên đơn vị người mua.',
       items: {
         create: [
           {
-            description: 'Dịch vụ bảo trì phần mềm kế toán năm 2026',
-            unit: 'Năm',
-            quantity: new Prisma.Decimal(1),
-            unitPrice: new Prisma.Decimal(12000000),
-            amount: new Prisma.Decimal(12000000),
-          },
-        ],
-      },
-    },
-  });
-
-  // Liên kết ngược replacedById từ #5 sang #6
-  await prisma.invoice.update({
-    where: { id: inv5.id },
-    data: { replacedById: inv6.id },
-  });
-
-  // 7. HÓA ĐƠN DÀI #7 (18 DÒNG HÀNG HÓA - TEST IN ẤN & XUẤT PDF NHIỀU TRANG A4)
-  const inv7 = await prisma.invoice.create({
-    data: {
-      templateCode: '01GTKT3/001',
-      zone: '1C26TAA',
-      sequenceNumber: 7,
-      invoiceNumber: '1C26TAA-0000007',
-      status: 'ISSUED',
-      issueDate: new Date('2026-08-22T15:30:00.000Z'),
-      taxDepartment: 'CỤC THUẾ TP. HÀ NỘI',
-      sellerName: 'CÔNG TY CỔ PHẦN CÔNG NGHỆ VÀ TRUYỀN THÔNG ALPHA',
-      sellerTaxCode: '0101234567',
-      sellerAddress: 'Tầng 3, Tòa nhà Alpha, 123 Đường Công Nghệ, Cầu Giấy, Hà Nội',
-      sellerPhone: '024 3838 9999',
-      sellerEmail: 'sales@alphatech.vn',
-      sellerBankAccount: '19031234567890 - Techcombank (CN Thăng Long)',
-      customerName: 'TỔNG CÔNG TY THƯƠNG MẠI VÀ XUẤT NHẬP KHẨU ĐẠI TÍN',
-      customerTaxCode: '0107778888',
-      customerEmail: 'ketoan@daitin-corp.vn',
-      customerAddress: 'Tòa nhà Diamond Plaza, Số 18 Phố Lê Duẩn, Hoàn Kiếm, Hà Nội',
-      customerPhone: '024 3999 7777',
-      customerBankAccount: '112000045678 - VietinBank (CN Hoàn Kiếm)',
-      paymentMethod: 'Chuyển khoản (TM/CK)',
-      totalAmount: new Prisma.Decimal(258550000),
-      vatAmount: new Prisma.Decimal(25855000),
-      vatRate: 10,
-      notes: 'Cung cấp gói trang thiết bị CNTT phòng họp và hệ thống máy trạm theo Hợp đồng kinh tế số 88/2026/HĐKT-IT',
-      items: {
-        create: [
-          {
-            description: '1. Máy tính để bàn Dell OptiPlex 7090 MT (Core i7/16GB/512GB SSD)',
-            unit: 'Bộ',
-            quantity: new Prisma.Decimal(5),
-            unitPrice: new Prisma.Decimal(18500000),
-            amount: new Prisma.Decimal(92500000),
-          },
-          {
-            description: '2. Màn hình máy tính Dell UltraSharp U2422H 23.8 inch IPS Full HD',
+            description: 'Thiết bị cảm biến nhiệt độ thông minh IoT MedSense v2',
             unit: 'Chiếc',
-            quantity: new Prisma.Decimal(5),
-            unitPrice: new Prisma.Decimal(5800000),
-            amount: new Prisma.Decimal(29000000),
-          },
-          {
-            description: '3. Bàn phím cơ không dây văn phòng Logitech MX Mechanical',
-            unit: 'Chiếc',
-            quantity: new Prisma.Decimal(5),
-            unitPrice: new Prisma.Decimal(3200000),
-            amount: new Prisma.Decimal(16000000),
-          },
-          {
-            description: '4. Chuột không dây công thái học cao cấp Logitech MX Master 3S',
-            unit: 'Chiếc',
-            quantity: new Prisma.Decimal(5),
-            unitPrice: new Prisma.Decimal(2100000),
-            amount: new Prisma.Decimal(10500000),
-          },
-          {
-            description: '5. Bộ lưu điện UPS APC Easy 1000VA / 600W 230V',
-            unit: 'Chiếc',
-            quantity: new Prisma.Decimal(2),
-            unitPrice: new Prisma.Decimal(4500000),
-            amount: new Prisma.Decimal(9000000),
-          },
-          {
-            description: '6. Máy in đa năng laser trắng đen HP LaserJet Pro MFP M428fdw',
-            unit: 'Chiếc',
-            quantity: new Prisma.Decimal(1),
-            unitPrice: new Prisma.Decimal(12800000),
-            amount: new Prisma.Decimal(12800000),
-          },
-          {
-            description: '7. Máy quét tài liệu 2 mặt tự động Fujitsu ScanSnap iX1600',
-            unit: 'Chiếc',
-            quantity: new Prisma.Decimal(1),
-            unitPrice: new Prisma.Decimal(14500000),
-            amount: new Prisma.Decimal(14500000),
-          },
-          {
-            description: '8. Tai nghe không dây chống ồn đàm thoại Jabra Evolve2 65',
-            unit: 'Chiếc',
-            quantity: new Prisma.Decimal(5),
-            unitPrice: new Prisma.Decimal(4200000),
-            amount: new Prisma.Decimal(21000000),
-          },
-          {
-            description: '9. Ổ cứng SSD gắn ngoài chống sốc Samsung T7 Shield 1TB USB 3.2',
-            unit: 'Chiếc',
-            quantity: new Prisma.Decimal(3),
-            unitPrice: new Prisma.Decimal(2600000),
-            amount: new Prisma.Decimal(7800000),
-          },
-          {
-            description: '10. Cuộn cáp mạng đúc sẵn Cat6 UTP 3 mét Ugreen cao cấp',
-            unit: 'Sợi',
-            quantity: new Prisma.Decimal(20),
-            unitPrice: new Prisma.Decimal(85000),
-            amount: new Prisma.Decimal(1700000),
-          },
-          {
-            description: '11. Thanh RAM nâng cấp DDR4 Kingston Fury Beast 16GB 3200MHz',
-            unit: 'Thanh',
             quantity: new Prisma.Decimal(4),
-            unitPrice: new Prisma.Decimal(1150000),
-            amount: new Prisma.Decimal(4600000),
-          },
-          {
-            description: '12. Ổ cứng di động gắn ngoài WD My Passport 2TB 2.5 inch USB 3.0',
-            unit: 'Chiếc',
-            quantity: new Prisma.Decimal(2),
-            unitPrice: new Prisma.Decimal(2150000),
-            amount: new Prisma.Decimal(4300000),
-          },
-          {
-            description: '13. Webcam hội nghị truyền hình Logitech C930e Full HD 1080p',
-            unit: 'Chiếc',
-            quantity: new Prisma.Decimal(3),
-            unitPrice: new Prisma.Decimal(2400000),
-            amount: new Prisma.Decimal(7200000),
-          },
-          {
-            description: '14. Loa hội nghị không dây 360 độ Jabra Speak 710 MS',
-            unit: 'Chiếc',
-            quantity: new Prisma.Decimal(1),
-            unitPrice: new Prisma.Decimal(6900000),
-            amount: new Prisma.Decimal(6900000),
-          },
-          {
-            description: '15. Tủ Rack mạng văn phòng 19 inch 12U cửa lưới sâu 600mm',
-            unit: 'Tủ',
-            quantity: new Prisma.Decimal(1),
-            unitPrice: new Prisma.Decimal(3500000),
-            amount: new Prisma.Decimal(3500000),
-          },
-          {
-            description: '16. Bộ chia cổng đa năng Type-C HyperDrive 8-in-1 4K HDMI',
-            unit: 'Chiếc',
-            quantity: new Prisma.Decimal(5),
-            unitPrice: new Prisma.Decimal(1800000),
-            amount: new Prisma.Decimal(9000000),
-          },
-          {
-            description: '17. Giá treo tay nâng màn hình công thái học North Bayou F80',
-            unit: 'Chiếc',
-            quantity: new Prisma.Decimal(5),
-            unitPrice: new Prisma.Decimal(450000),
-            amount: new Prisma.Decimal(2250000),
-          },
-          {
-            description: '18. Dịch vụ thi công lắp đặt, bấm dây mạng và cấu hình trọn gói',
-            unit: 'Gói',
-            quantity: new Prisma.Decimal(1),
-            unitPrice: new Prisma.Decimal(5000000),
-            amount: new Prisma.Decimal(5000000),
+            unitPrice: new Prisma.Decimal(2200000),
+            amount: new Prisma.Decimal(8800000),
           },
         ],
       },
     },
   });
 
-  // Đồng bộ PostgreSQL sequence với số sequence lớn nhất hiện tại
+  // Synchronize PostgreSQL sequence with max sequenceNumber in database
   await prisma.$executeRaw`
     CREATE SEQUENCE IF NOT EXISTS "Invoice_sequenceNumber_seq";
   `;
@@ -444,19 +355,19 @@ async function main() {
     SELECT setval('"Invoice_sequenceNumber_seq"', (SELECT COALESCE(MAX("sequenceNumber"), 0) FROM "Invoice"));
   `;
 
-  console.log('✅ Đã nạp thành công 7 hóa đơn mẫu (bao gồm hóa đơn dài 18 mục):');
+  console.log('[Seed] Successfully seeded 7 sample invoices:');
   console.log(`  1. [ISSUED]   ${inv1.invoiceNumber} - ${inv1.customerName}`);
   console.log(`  2. [ISSUED]   ${inv2.invoiceNumber} - ${inv2.customerName}`);
-  console.log(`  3. [DRAFT]    ${inv3.invoiceNumber} - ${inv3.customerName}`);
-  console.log(`  4. [CANCELED] ${inv4.invoiceNumber} - ${inv4.customerName}`);
-  console.log(`  5. [REPLACED] ${inv5.invoiceNumber} - ${inv5.customerName}`);
-  console.log(`  6. [ISSUED-REPLACEMENT] ${inv6.invoiceNumber} - ${inv6.customerName} (Thay thế cho #5)`);
-  console.log(`  7. [ISSUED-LONG-18ITEMS] ${inv7.invoiceNumber} - ${inv7.customerName} (284.405.000 ₫)`);
+  console.log(`  3. [ISSUED]   ${inv3.invoiceNumber} - ${inv3.customerName}`);
+  console.log(`  4. [ISSUED]   ${inv4.invoiceNumber} - ${inv4.customerName}`);
+  console.log(`  5. [ISSUED-18ITEMS] ${inv5.invoiceNumber} - ${inv5.customerName}`);
+  console.log(`  6. [DRAFT]    ${inv6.invoiceNumber} - ${inv6.customerName}`);
+  console.log(`  7. [CANCELED] ${inv7.invoiceNumber} - ${inv7.customerName}`);
 }
 
 main()
   .catch((e) => {
-    console.error('❌ Lỗi khi nạp dữ liệu mẫu:', e);
+    console.error('[Seed Error]:', e);
     process.exit(1);
   })
   .finally(async () => {

@@ -5,11 +5,7 @@ import { useInvoice } from '../context/InvoiceContext';
 const stateGuard = new StateMachineGuard();
 
 /**
- * Custom Hook: useDeleteDraftInvoice
- * Thin wiring adapter connecting UI to StateMachineGuard and InvoiceService deleteDraftInvoice workflow
- * Workflows:
- * - openDeleteModal (StateMachineGuard.validateDraftModification)
- * - confirmDeleteDraft (InvoiceService.deleteDraftInvoice)
+ * Hook for managing draft invoice deletion and validation.
  */
 export function useDeleteDraftInvoice(invoiceId?: string, currentStatus?: string, onSuccess?: () => void) {
   const { deleteDraftInvoice, showToast } = useInvoice();

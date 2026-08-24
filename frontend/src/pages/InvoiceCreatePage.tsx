@@ -64,7 +64,7 @@ export const InvoiceCreatePage: React.FC = () => {
     <div className="min-h-screen bg-background text-on-surface flex flex-col font-sans">
       {/* Global Header */}
       <GlobalHeader
-        appName="AuditorPro Hóa Đơn"
+        appName="exportInvoice"
         activeNav="invoices"
         onNavigateToInvoiceList={() => navigate('/invoices')}
         onNavigateToCreateInvoice={() => navigate('/invoices/new')}

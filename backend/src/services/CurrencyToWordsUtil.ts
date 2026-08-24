@@ -71,8 +71,7 @@ function readThreeDigits(
 
 export class CurrencyToWordsUtil implements ICurrencyToWordsUtil {
   /**
-   * Workflow: convertVndToWords
-   * Converts numeric VND amount into standardized Vietnamese text description
+   * Converts numeric VND amount into standardized Vietnamese text description.
    * e.g., 12320000 -> "Mười hai triệu ba trăm hai mươi nghìn đồng chẵn"
    */
   convertVndToWords(amount: number): string {

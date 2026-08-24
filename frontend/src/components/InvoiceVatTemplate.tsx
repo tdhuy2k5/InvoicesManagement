@@ -41,6 +41,8 @@ export interface InvoiceVatTemplateProps {
   signerName?: string;
   signedAt?: string;
   originalInvoiceId?: string | null;
+  originalInvoiceNumber?: string | null;
+  originalIssueDate?: string | null;
   cancelReason?: string | null;
   taxAuthorityCode?: string | null;
   status?: string;
@@ -117,11 +119,13 @@ export const InvoiceVatTemplate: React.FC<InvoiceVatTemplateProps> = ({
   signerName,
   signedAt,
   originalInvoiceId,
+  originalInvoiceNumber,
+  originalIssueDate,
   taxAuthorityCode,
   status = 'DRAFT',
   className = '',
 }) => {
-  const isDraft = status === 'DRAFT' || (!isSigned && status !== 'ISSUED' && status !== 'REPLACED');
+  const isDraft = status === 'DRAFT';
   const isIssued = status === 'ISSUED';
   const isCanceled = status === 'CANCELED';
   const isReplaced = status === 'REPLACED';
@@ -150,10 +154,10 @@ export const InvoiceVatTemplate: React.FC<InvoiceVatTemplateProps> = ({
     : (calcSubtotal + calcVat);
   const words = amountInWords || convertVndToWords(calcTotal);
 
-  // Clean invoice number to 7-digit display
-  const displayNo = sequenceNumber !== undefined
+  // Clean invoice number to 7-digit display (Avoid '000null' by checking both undefined and null)
+  const displayNo = (sequenceNumber !== undefined && sequenceNumber !== null)
     ? String(sequenceNumber).padStart(7, '0')
-    : invoiceNumber.replace(/[^\d]/g, '').padStart(7, '0') || '0000001';
+    : (invoiceNumber ? (invoiceNumber.replace(/[^\d]/g, '').padStart(7, '0') || invoiceNumber) : '0000001');
 
   // Copy title helper
   const getCopyTitle = () => {
@@ -184,12 +188,12 @@ export const InvoiceVatTemplate: React.FC<InvoiceVatTemplateProps> = ({
       {/* WATERMARK SECTION (DRAFT / CANCELED) */}
       {isDraft && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none z-10 opacity-[0.14] overflow-hidden">
-          <div className="transform -rotate-45 text-center border-8 border-dashed border-gray-900 p-8 rounded-3xl">
-            <div className="text-5xl sm:text-7xl font-bold uppercase tracking-widest text-gray-900">
-              DRAFT
+          <div className="transform -rotate-30 text-center border-4 sm:border-6 border-dashed border-gray-700 px-6 py-4 sm:px-10 sm:py-6 rounded-2xl">
+            <div className="text-3xl sm:text-5xl font-black uppercase tracking-widest text-gray-800 leading-none">
+              BẢN NHÁP
             </div>
-            <div className="text-xl sm:text-2xl font-bold uppercase tracking-wider text-gray-800 mt-2">
-              (BẢN NHÁP - CHƯA CÓ GIÁ TRỊ PHÁP LÝ)
+            <div className="text-xs sm:text-sm font-bold uppercase tracking-wider text-gray-700 mt-3 leading-none">
+              (DRAFT - CHƯA CÓ GIÁ TRỊ PHÁP LÝ)
             </div>
           </div>
         </div>
@@ -197,12 +201,12 @@ export const InvoiceVatTemplate: React.FC<InvoiceVatTemplateProps> = ({
 
       {isCanceled && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none z-10 opacity-[0.18] overflow-hidden">
-          <div className="transform -rotate-45 text-center border-8 border-dashed border-red-700 p-8 rounded-3xl">
-            <div className="text-5xl sm:text-7xl font-bold uppercase tracking-widest text-red-700">
-              CANCELED
+          <div className="transform -rotate-30 text-center border-4 sm:border-6 border-dashed border-red-600 px-6 py-4 sm:px-10 sm:py-6 rounded-2xl">
+            <div className="text-3xl sm:text-5xl font-black uppercase tracking-widest text-red-600 leading-none">
+              HÓA ĐƠN ĐÃ HỦY
             </div>
-            <div className="text-xl sm:text-2xl font-bold uppercase tracking-wider text-red-800 mt-2">
-              (HÓA ĐƠN ĐÃ HỦY)
+            <div className="text-xs sm:text-sm font-bold uppercase tracking-wider text-red-700 mt-3 leading-none">
+              (CANCELED)
             </div>
           </div>
         </div>
@@ -246,9 +250,12 @@ export const InvoiceVatTemplate: React.FC<InvoiceVatTemplateProps> = ({
       </div>
 
       {/* Replacement Notice Banner */}
-      {originalInvoiceId && (
-        <div className="bg-amber-50 border border-amber-300 text-amber-900 text-xs px-3 py-1.5 rounded mb-3 text-center italic">
-          ⚠️ <em>Hóa đơn này thay thế cho hóa đơn gốc mã định danh #{originalInvoiceId}</em>
+      {(originalInvoiceNumber || originalInvoiceId) && (
+        <div className="bg-amber-50 border border-amber-300 text-amber-900 text-xs px-3 py-1.5 rounded mb-3 text-center italic font-medium">
+          ⚠️ <em>
+            Hóa đơn này thay thế cho hóa đơn {originalInvoiceNumber ? `số ${originalInvoiceNumber}` : 'gốc'}
+            {originalIssueDate ? ` ngày ${originalIssueDate}` : ''}
+          </em>
         </div>
       )}
 

@@ -29,6 +29,7 @@ export const InvoiceDetailPage: React.FC = () => {
     cancelInvoice,
     deleteDraftInvoice,
     cloneInvoice,
+    showToast,
   } = useInvoice();
 
   const invoiceId = routeParams.id || '1';
@@ -88,11 +89,21 @@ export const InvoiceDetailPage: React.FC = () => {
     }
   };
 
-  // Direct download PDF handler
-  const handleDownloadPdf = () => {
-    if (!invoice) return;
-    const url = invoiceApi.getPdfDownloadUrl(invoice.id, true);
-    window.open(url, '_blank');
+  const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
+
+  // Direct download PDF handler with progress & toast (No blank tab!)
+  const handleDownloadPdf = async () => {
+    if (!invoice || isDownloadingPdf) return;
+    setIsDownloadingPdf(true);
+    showToast('info', 'Đang Tạo PDF', `Đang kết xuất bản thể hiện hóa đơn ${invoice.invoiceNumber}...`);
+    try {
+      await invoiceApi.downloadPdf(invoice.id, invoice.invoiceNumber);
+      showToast('success', 'Tải Thành Công', `Đã tải xuống file PDF hóa đơn ${invoice.invoiceNumber}.`);
+    } catch (err: any) {
+      showToast('error', 'Lỗi Tải PDF', err?.message || 'Không thể tạo file PDF.');
+    } finally {
+      setIsDownloadingPdf(false);
+    }
   };
 
   // Related invoice helpers
@@ -110,7 +121,7 @@ export const InvoiceDetailPage: React.FC = () => {
     return (
       <div className="min-h-screen bg-background text-on-surface flex flex-col font-sans">
         <GlobalHeader
-          appName="AuditorPro Hóa Đơn"
+          appName="exportInvoice"
           activeNav="invoices"
           onNavigateToInvoiceList={() => navigate('/invoices')}
           onNavigateToCreateInvoice={() => navigate('/invoices/new')}
@@ -173,7 +184,7 @@ export const InvoiceDetailPage: React.FC = () => {
     <div className="min-h-screen bg-background text-on-surface flex flex-col font-sans">
       {/* Global Header */}
       <GlobalHeader
-        appName="AuditorPro Hóa Đơn"
+        appName="exportInvoice"
         activeNav="invoices"
         onNavigateToInvoiceList={() => navigate('/invoices')}
         onNavigateToCreateInvoice={() => navigate('/invoices/new')}
@@ -203,6 +214,7 @@ export const InvoiceDetailPage: React.FC = () => {
         onVerifyTax={() => setTaxModalOpen(true)}
         onPrintPreview={() => setPrintModalOpen(true)}
         onDownloadPdf={handleDownloadPdf}
+        isDownloadingPdf={isDownloadingPdf}
         onViewOriginalInvoice={(origId) => navigate('/invoices/:id', { id: origId })}
         onViewReplacementInvoice={(repId) => navigate('/invoices/:id', { id: repId })}
       />
@@ -281,6 +293,8 @@ export const InvoiceDetailPage: React.FC = () => {
         signedBy={invoice.signedBy}
         signedAt={invoice.signedAt}
         originalInvoiceId={invoice.originalInvoiceId}
+        originalInvoiceNumber={originalInvoice?.invoiceNumber || invoice.originalInvoiceNumber}
+        originalIssueDate={originalInvoice?.issueDate ? new Date(originalInvoice.issueDate).toLocaleDateString('vi-VN') : undefined}
         taxAuthorityCode={invoice.taxAuthorityCode}
       />
 

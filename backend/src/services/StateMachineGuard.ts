@@ -31,8 +31,7 @@ export class StateMachineGuard implements IStateMachineGuard {
   }
 
   /**
-   * Workflow: updateDraftInvoice / deleteDraftInvoice
-   * Ensures status is DRAFT before allowing edit/delete or throws INVALID_TRANSITION
+   * Ensures status is DRAFT before allowing edit or delete operations.
    */
   validateDraftModification(currentStatus: string): void {
     if (currentStatus !== InvoiceStatus.DRAFT) {
@@ -45,8 +44,7 @@ export class StateMachineGuard implements IStateMachineGuard {
   }
 
   /**
-   * Workflow: issueInvoice
-   * Ensures status is DRAFT before allowing transition to ISSUED or throws INVALID_TRANSITION
+   * Ensures status is DRAFT before allowing transition to ISSUED.
    */
   validateIssueTransition(currentStatus: string): void {
     if (currentStatus !== InvoiceStatus.DRAFT) {
@@ -59,8 +57,7 @@ export class StateMachineGuard implements IStateMachineGuard {
   }
 
   /**
-   * Workflow: cancelInvoice
-   * Ensures status is ISSUED before allowing transition to CANCELED or throws INVALID_TRANSITION
+   * Ensures status is ISSUED before allowing transition to CANCELED.
    */
   validateCancelTransition(currentStatus: string): void {
     if (currentStatus !== InvoiceStatus.ISSUED) {
@@ -73,9 +70,9 @@ export class StateMachineGuard implements IStateMachineGuard {
   }
 
   /**
-   * Workflow: replaceInvoice
-   * Guards that status is ISSUED and invoice is root (originalInvoiceId is null/undefined),
-   * otherwise throws INVALID_TRANSITION or REPLACEMENT_NOT_ALLOWED
+   * Validates replacement eligibility under Decree 123:
+   * 1. Status must be ISSUED.
+   * 2. Cannot replace an invoice that is already a replacement (enforces 1-level depth cap).
    */
   validateReplacementEligibility(
     currentStatus: string,

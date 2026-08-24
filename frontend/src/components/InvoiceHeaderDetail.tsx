@@ -24,6 +24,7 @@ export interface InvoiceHeaderDetailProps {
   onReplaceInvoice?: () => void;
   onCancelInvoice?: () => void;
   onDownloadPdf?: () => void;
+  isDownloadingPdf?: boolean;
   onPrintPreview?: () => void;
   onVerifyTax?: () => void;
   onViewOriginalInvoice?: (id: string) => void;
@@ -33,18 +34,7 @@ export interface InvoiceHeaderDetailProps {
 export { useInvoiceDetailActions };
 
 /**
- * InvoiceHeaderDetail
- * Action Header & Replacement Banner for Invoice Detail Screen.
- * Navigation & Action Edges:
- * - `backToInvoiceList` -> `/invoices`
- * - `editDraftFromDetail` -> `/invoices/:id/edit`
- * - `replaceInvoiceFromDetail` -> `/invoices/:id/replace`
- * - `viewReplacedInvoice` -> `/invoices/:originalInvoiceId`
- * - `viewReplacementInvoice` -> `/invoices/:replacedById`
- * - `cloneInvoiceFromDetail` (executes: cloneInvoice)
- * - `openIssueModal` (executes: validateIssueTransition)
- * - `openCancelModalFromDetail` (executes: validateCancelTransition)
- * - `openDeleteModalFromDetail` (executes: validateDraftModification)
+ * Action header toolbar and status banner for the invoice detail screen.
  */
 export const InvoiceHeaderDetail: React.FC<InvoiceHeaderDetailProps> = ({
   id,
@@ -67,6 +57,7 @@ export const InvoiceHeaderDetail: React.FC<InvoiceHeaderDetailProps> = ({
   onReplaceInvoice,
   onCancelInvoice,
   onDownloadPdf,
+  isDownloadingPdf = false,
   onPrintPreview,
   onVerifyTax,
   onViewOriginalInvoice,
@@ -255,11 +246,23 @@ export const InvoiceHeaderDetail: React.FC<InvoiceHeaderDetailProps> = ({
 
           <button
             type="button"
+            disabled={isDownloadingPdf}
             onClick={onDownloadPdf}
-            className="px-4 py-2 bg-surface text-primary border border-outline rounded-lg font-tabular-nums text-tabular-nums hover:bg-surface-container-low transition flex items-center gap-1.5"
+            className={`px-4 py-2 bg-surface text-primary border border-outline rounded-lg font-tabular-nums text-tabular-nums hover:bg-surface-container-low transition flex items-center gap-1.5 font-medium ${
+              isDownloadingPdf ? 'opacity-70 cursor-wait' : ''
+            }`}
           >
-            <span className="material-symbols-outlined text-[18px]">download</span>
-            <span>Tải Xuống PDF</span>
+            {isDownloadingPdf ? (
+              <>
+                <span className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></span>
+                <span>Đang Tạo PDF...</span>
+              </>
+            ) : (
+              <>
+                <span className="material-symbols-outlined text-[18px]">download</span>
+                <span>Tải Xuống PDF</span>
+              </>
+            )}
           </button>
         </div>
       </div>

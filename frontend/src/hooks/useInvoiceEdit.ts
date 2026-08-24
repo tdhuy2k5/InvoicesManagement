@@ -7,12 +7,7 @@ import { InvoiceEntity } from '../mockData';
 const stateGuard = new StateMachineGuard();
 
 /**
- * Custom Hook: useInvoiceEdit
- * Thin wiring adapter connecting UI to Backend Core InvoiceService and StateMachineGuard edit workflows
- * Workflows:
- * - getInvoiceById (InvoiceService.getInvoiceById)
- * - validateDraftModification (StateMachineGuard.validateDraftModification)
- * - updateDraftInvoice (InvoiceService.updateDraftInvoice)
+ * Hook for managing draft invoice edit state and updates.
  */
 export function useInvoiceEdit(invoiceId?: string) {
   const { getInvoiceById, updateDraftInvoice, navigate, showToast } = useInvoice();

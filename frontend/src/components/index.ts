@@ -14,3 +14,4 @@ export * from './InvoiceSummary';
 export * from './InvoiceTable';
 export * from './InvoiceVatTemplate';
 export * from './TaxVerificationModal';
+export * from './InvoiceReplaceConfirmModal';

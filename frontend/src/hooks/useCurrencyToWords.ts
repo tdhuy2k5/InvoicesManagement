@@ -2,9 +2,7 @@ import { useMemo } from 'react';
 import { convertVndToWords } from '@backend/services/CurrencyToWordsUtil';
 
 /**
- * Custom Hook: useCurrencyToWords
- * Thin wiring adapter connecting UI components directly to Backend Core CurrencyToWordsUtil
- * Workflow: convertVndToWords
+ * Hook to convert numeric VND amounts into Vietnamese words.
  */
 export function useCurrencyToWords(amount?: number, initialWords?: string) {
   const words = useMemo(() => {

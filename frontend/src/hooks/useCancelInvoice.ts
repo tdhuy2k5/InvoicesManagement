@@ -5,11 +5,7 @@ import { useInvoice } from '../context/InvoiceContext';
 const stateGuard = new StateMachineGuard();
 
 /**
- * Custom Hook: useCancelInvoice
- * Thin wiring adapter connecting UI to StateMachineGuard and InvoiceService cancel workflow
- * Workflows:
- * - openCancelModal (StateMachineGuard.validateCancelTransition)
- * - confirmCancelInvoice (InvoiceService.cancelInvoice)
+ * Hook for managing the cancel invoice modal and status transition.
  */
 export function useCancelInvoice(invoiceId?: string, currentStatus?: string) {
   const { cancelInvoice, showToast } = useInvoice();

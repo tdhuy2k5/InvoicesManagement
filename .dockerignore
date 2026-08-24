@@ -8,6 +8,11 @@ dist
 .claude
 _bmad
 _bmad-output
+system-graphs
+implementation-artifacts
+custom-skill
+coverage
+storage
 *.log
 .DS_Store
 *.local

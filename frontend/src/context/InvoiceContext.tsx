@@ -275,6 +275,7 @@ export const InvoiceProvider: React.FC<{ children: React.ReactNode }> = ({ child
         sellerEmail: data.sellerEmail,
         sellerBankAccount: data.sellerBankAccount,
         taxDepartment: data.taxDepartment,
+        agreementMinutes: data.agreementMinutes,
         vatRate: data.vatRate,
         notes: data.notes,
         items: data.items,

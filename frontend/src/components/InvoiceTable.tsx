@@ -181,7 +181,13 @@ export const InvoiceTable: React.FC<InvoiceTableProps> = ({
                     >
                       <div className="hover:underline cursor-pointer">{inv.invoiceNumber}</div>
                       {inv.taxAuthorityCode && (
-                        <div className="text-[10px] text-emerald-700 dark:text-emerald-400 font-normal font-mono flex items-center gap-0.5 mt-0.5 no-underline">
+                        <div
+                          className={`text-[10px] font-normal font-mono flex items-center gap-0.5 mt-0.5 ${
+                            isStrikethrough
+                              ? 'text-on-surface-variant line-through opacity-70'
+                              : 'text-emerald-700 dark:text-emerald-400 no-underline'
+                          }`}
+                        >
                           <span className="material-symbols-outlined text-[12px]">account_balance</span>
                           <span>{inv.taxAuthorityCode}</span>
                         </div>

@@ -54,9 +54,7 @@ export class InvoiceSequenceService {
   }
 
   /**
-   * Workflow: generateInvoiceNumber
-   * Fetches nextval from the PostgreSQL autoincrement sequence belonging to Invoice.sequenceNumber
-   * and formats as <zone>-<00001>
+   * Fetches the next atomic sequence value from PostgreSQL sequence and formats as <zone>-<00001>.
    */
   async generateInvoiceNumber(zone?: string): Promise<string> {
     const nextVal = await this.getNextSequenceNumber();

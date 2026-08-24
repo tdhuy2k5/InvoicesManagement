@@ -6,14 +6,7 @@ import { InvoiceRowItem } from '../components/InvoiceTable';
 const stateGuard = new StateMachineGuard();
 
 /**
- * Custom Hook: useInvoiceTableActions
- * Thin wiring adapter connecting InvoiceTable directly to Backend Core functions & StateMachineGuard
- * Workflows:
- * - cloneInvoiceFromList (InvoiceService.cloneInvoice)
- * - openDeleteModal (StateMachineGuard.validateDraftModification)
- * - openCancelModal (StateMachineGuard.validateCancelTransition)
- * - editDraftInvoice (StateMachineGuard.validateDraftModification)
- * - replaceIssuedInvoice (StateMachineGuard.validateReplacementEligibility)
+ * Hook providing action handlers (clone, delete, cancel, edit, replace) for the invoice table.
  */
 export function useInvoiceTableActions(callbacks?: {
   onOpenDeleteModal?: (invoice: InvoiceRowItem) => void;

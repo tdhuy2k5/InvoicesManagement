@@ -205,6 +205,7 @@ export const invoiceApi = {
       sellerEmail?: string;
       sellerBankAccount?: string;
       taxDepartment?: string;
+      agreementMinutes?: string;
       vatRate: number;
       notes?: string;
       items: InvoiceItem[];
@@ -241,5 +242,25 @@ export const invoiceApi = {
    */
   getPdfDownloadUrl(id: string, isDownload = true): string {
     return `${API_BASE_URL}/invoices/${encodeURIComponent(id)}/pdf?download=${isDownload}`;
+  },
+
+  /**
+   * Directly download PDF as a Blob without opening a blank screen/tab
+   */
+  async downloadPdf(id: string, invoiceNumber: string = 'HoaDon'): Promise<void> {
+    const url = `${API_BASE_URL}/invoices/${encodeURIComponent(id)}/pdf?download=true`;
+    const res = await fetch(url);
+    if (!res.ok) {
+      throw new Error('Không thể tải file PDF hóa đơn từ máy chủ');
+    }
+    const blob = await res.blob();
+    const blobUrl = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = blobUrl;
+    a.download = `HoaDon-${invoiceNumber.replace(/[^\w-]/g, '_')}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(blobUrl);
   },
 };
