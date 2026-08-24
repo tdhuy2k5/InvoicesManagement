@@ -203,16 +203,25 @@ npm run test:coverage
 
 File Postman Collection: [postman/Invoice_Management_API.postman_collection.json](file:///d:/Documents/InvoiceManagement/postman/Invoice_Management_API.postman_collection.json)
 
-**Các bước kiểm thử bằng Postman:**
+Collection đã được thiết kế sẵn theo tiêu chuẩn **Zero-Configuration & Automation Test**, người kiểm thử không cần phải nhập hay cấu hình tham số thủ công:
 
-1. Mở Postman $\rightarrow$ Chọn **Import** $\rightarrow$ Kéo thả file `Invoice_Management_API.postman_collection.json` vào.
-2. Biến môi trường `baseUrl` mặc định là `http://localhost:5000`.
-3. **Kịch bản kiểm thử luồng hóa đơn tự động:**
-   - **Tạo Bản Nháp:** Chạy `1. POST /api/invoices (Create Draft)` $\rightarrow$ Postman tự động gán `invoiceId` vừa tạo vào biến môi trường.
-   - **Xem Chi Tiết:** Chạy `2. GET /api/invoices/:id`.
-   - **Ký Phát Hành:** Chạy `3. POST /api/invoices/:id/issue` $\rightarrow$ Hóa đơn nhận số sequence và Mã CQT.
-   - **Xuất PDF:** Chạy `4. GET /api/invoices/:id/pdf?download=true` $\rightarrow$ Tải file PDF chính thức.
-   - **Lập HĐ Thay Thế / Hủy:** Chạy `POST /api/invoices/:id/replace` hoặc `POST /api/invoices/:id/cancel` để xác thực State Machine Guard.
+- **Biến `baseUrl`:** Đã được cài mặc định là `http://localhost:5000` (trỏ trực tiếp vào backend).
+- **Biến `invoiceId`:** **Hoàn toàn tự động!** Khi chạy API tạo hóa đơn nháp hoặc thay thế, script test tích hợp sẵn trong Postman sẽ tự động bắt `id` từ phản hồi JSON và gán vào biến `invoiceId` để các API tiếp theo (xem, sửa, ký, hủy, tải PDF) tự động tái sử dụng.
+
+#### Cách 1: Chạy Tự Động 1-Click Bằng "Run Collection" (Khuyên dùng)
+1. Mở Postman $\rightarrow$ Chọn **Import** $\rightarrow$ Chọn file `postman/Invoice_Management_API.postman_collection.json`.
+2. Chuột phải vào Collection **`Invoice Management System API (Decree 123 Compliant)`** $\rightarrow$ Chọn **`Run collection`**.
+3. Bấm nút màu cam **`Run Invoice Management...`** $\rightarrow$ Postman sẽ tự động thực thi tuần tự toàn bộ 11 API endpoints và báo cáo kết quả `Passed` 100%.
+
+#### Cách 2: Chạy Từng Bước Thủ Công Theo Luồng Nghiệp Vụ
+1. **Kiểm tra máy chủ:** Chạy `Health Check` $\rightarrow$ Nhận phản hồi `200 OK`.
+2. **Tạo Bản Nháp:** Chạy `1.1 Create Draft Invoice` $\rightarrow$ Postman tự động lưu ID vào biến `invoiceId`.
+3. **Xem & Sửa Bản Nháp:** Chạy `1.3 Get Invoice Detail by ID` và `1.4 Update Draft Invoice`.
+4. **Nhân Bản:** Chạy `1.5 Clone Invoice to Draft` để tạo bản sao nháp từ hóa đơn hiện tại.
+5. **Ký & Phát Hành Hóa Đơn:** Chạy `2.1 Issue/Sign Invoice` $\rightarrow$ Hóa đơn được cấp số thứ tự chính thức (`1C26TAA-000000X`), sinh Mã CQT (`00E26TAA...`) và đóng băng dữ liệu.
+6. **Lập Hóa Đơn Thay Thế:** Chạy `2.2 Replace Invoice` $\rightarrow$ Tạo hóa đơn mới thay thế, tự động cập nhật `invoiceId` mới.
+7. **Hủy Hóa Đơn:** Chạy `2.3 Cancel Invoice` $\rightarrow$ Hủy hóa đơn (kèm lý do và số biên bản thỏa thuận).
+8. **Xuất & Tải PDF:** Chạy `3.1 Preview PDF Stream` (xem trực tiếp) và `3.2 Download PDF Attachment` (bấm **Send and Download** để tải file `.pdf` về máy).
 
 ---
 

@@ -1,0 +1,14 @@
+$kind: http-request
+name: 2.3 Cancel Invoice (ISSUED -> CANCELED)
+url: "{{baseUrl}}/api/invoices/{{invoiceId}}/cancel"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "cancelReason": "Hủy theo biên bản thỏa thuận số 01/BB-HUY giữa hai bên do hủy hợp đồng cung cấp dịch vụ",
+      "agreementMinutes": "01/BB-HUY"
+    }
+order: 3000

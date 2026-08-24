@@ -1,0 +1,5 @@
+$kind: http-request
+name: 2.1 Issue/Sign Invoice & Request Tax Authority Code (Cấp Mã CQT)
+url: "{{baseUrl}}/api/invoices/{{invoiceId}}/issue"
+method: POST
+order: 1000

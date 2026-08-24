@@ -1,0 +1,4 @@
+$kind: http-request
+url: "{{baseUrl}}/api/invoices/{{invoiceId}}/clone"
+method: POST
+order: 6000

@@ -1,0 +1,15 @@
+$kind: http-request
+url: "{{baseUrl}}/api/invoices?search=Alpha&status=ISSUED&page=1&limit=10"
+method: GET
+queryParams:
+  - key: search
+    value: Alpha
+    description: Tìm kiếm theo tên khách hàng, MST, số hóa đơn
+  - key: status
+    value: ISSUED
+    description: Lọc trạng thái (DRAFT, ISSUED, CANCELED, REPLACED)
+  - key: page
+    value: "1"
+  - key: limit
+    value: "10"
+order: 3000

@@ -1,0 +1,6 @@
+$kind: collection
+name: Invoice Management System API (Decree 123 Compliant)
+description: Postman Collection for testing Electronic Invoice Management REST API built with Express, TypeScript, PostgreSQL and Prisma ORM.
+variables:
+  baseUrl: http://localhost:5000
+  invoiceId: ""

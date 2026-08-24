@@ -1,0 +1,44 @@
+$kind: http-request
+url: "{{baseUrl}}/api/invoices"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "customerName": "Công ty Cổ phần Thương mại Alpha",
+      "customerTaxCode": "0108888888",
+      "customerEmail": "alpha@example.com",
+      "customerAddress": "Tầng 8, Tòa nhà Landmark 72, Cầu Giấy, Hà Nội",
+      "sellerName": "Công ty Cổ phần Giải pháp Phần mềm TechVN",
+      "sellerTaxCode": "0309876543",
+      "sellerAddress": "Số 123 Đường Nguyễn Huệ, Quận 1, TP. Hồ Chí Minh",
+      "sellerPhone": "0901234567",
+      "vatRate": 10,
+      "notes": "Hóa đơn dịch vụ phần mềm quản lý hóa đơn điện tử",
+      "items": [
+        {
+          "description": "Phần mềm quản lý hóa đơn (Gói Doanh Nghiệp)",
+          "unit": "Gói",
+          "quantity": 1,
+          "unitPrice": 15000000
+        },
+        {
+          "description": "Dịch vụ đào tạo và chuyển giao công nghệ",
+          "unit": "Buổi",
+          "quantity": 2,
+          "unitPrice": 2500000
+        }
+      ]
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      var jsonData = pm.response.json();
+      if (jsonData.success && jsonData.data && jsonData.data.id) {
+          pm.collectionVariables.set('invoiceId', jsonData.data.id);
+          console.log('Saved invoiceId:', jsonData.data.id);
+      }
+    language: text/javascript
+order: 1000

@@ -1,0 +1,6 @@
+$kind: http-request
+url: "{{baseUrl}}/api/invoices/{{invoiceId}}/pdf?download=true"
+method: GET
+queryParams:
+  download: "true"
+order: 2000

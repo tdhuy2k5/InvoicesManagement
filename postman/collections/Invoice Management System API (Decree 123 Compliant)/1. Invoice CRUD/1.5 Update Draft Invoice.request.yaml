@@ -1,0 +1,21 @@
+$kind: http-request
+url: "{{baseUrl}}/api/invoices/{{invoiceId}}"
+method: PUT
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "customerName": "Công ty Cổ phần Thương mại Alpha (Cập Nhật)",
+      "vatRate": 8,
+      "items": [
+        {
+          "description": "Phần mềm quản lý hóa đơn (Gói Doanh Nghiệp Nâng Cấp)",
+          "unit": "Gói",
+          "quantity": 1,
+          "unitPrice": 18000000
+        }
+      ]
+    }
+order: 5000

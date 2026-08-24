@@ -48,6 +48,7 @@
                   "var jsonData = pm.response.json();",
                   "if (jsonData.success && jsonData.data && jsonData.data.id) {",
                   "    pm.collectionVariables.set('invoiceId', jsonData.data.id);",
+                  "    console.log('Saved invoiceId:', jsonData.data.id);",
                   "}"
                 ],
                 "type": "text/javascript"
@@ -74,24 +75,41 @@
           }
         },
         {
-          "name": "1.2 Get Invoices List (Filter & Pagination)",
+          "name": "1.2 Get Invoices List (Pagination & Date Filter)",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/invoices?page=1&limit=10&status=DRAFT",
+              "raw": "{{baseUrl}}/api/invoices?page=1&limit=10",
               "host": ["{{baseUrl}}"],
               "path": ["api", "invoices"],
               "query": [
                 { "key": "page", "value": "1" },
-                { "key": "limit", "value": "10" },
-                { "key": "status", "value": "DRAFT" }
+                { "key": "limit", "value": "10" }
               ]
             }
           }
         },
         {
-          "name": "1.3 Get Invoice Detail by ID",
+          "name": "1.3 Search Invoices (Multi-Criteria & Full-Text)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/invoices?search=Alpha&status=ISSUED&page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "invoices"],
+              "query": [
+                { "key": "search", "value": "Alpha", "description": "Tìm kiếm theo tên khách hàng, MST, số hóa đơn" },
+                { "key": "status", "value": "ISSUED", "description": "Lọc trạng thái (DRAFT, ISSUED, CANCELED, REPLACED)" },
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "1.4 Get Invoice Detail by ID",
           "request": {
             "method": "GET",
             "header": [],
@@ -103,7 +121,7 @@
           }
         },
         {
-          "name": "1.4 Update Draft Invoice",
+          "name": "1.5 Update Draft Invoice",
           "request": {
             "method": "PUT",
             "header": [
@@ -124,14 +142,14 @@
           }
         },
         {
-          "name": "1.5 Delete Draft Invoice",
+          "name": "1.6 Clone Invoice to Draft",
           "request": {
-            "method": "DELETE",
+            "method": "POST",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/invoices/{{invoiceId}}",
+              "raw": "{{baseUrl}}/api/invoices/{{invoiceId}}/clone",
               "host": ["{{baseUrl}}"],
-              "path": ["api", "invoices", "{{invoiceId}}"]
+              "path": ["api", "invoices", "{{invoiceId}}", "clone"]
             }
           }
         }
@@ -141,7 +159,7 @@
       "name": "2. Invoice Lifecycle Operations",
       "item": [
         {
-          "name": "2.1 Issue/Sign Invoice (DRAFT -> ISSUED)",
+          "name": "2.1 Issue/Sign Invoice & Request Tax Authority Code (Cấp Mã CQT)",
           "request": {
             "method": "POST",
             "header": [],
@@ -153,28 +171,22 @@
           }
         },
         {
-          "name": "2.2 Cancel Invoice (ISSUED -> CANCELED)",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
+          "name": "2.2 Replace Invoice (ISSUED -> REPLACED)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.success && jsonData.data && jsonData.data.id) {",
+                  "    pm.collectionVariables.set('invoiceId', jsonData.data.id);",
+                  "    console.log('Updated invoiceId to replacement:', jsonData.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
               }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"cancelReason\": \"Hủy theo biên bản thỏa thuận số 01/BB-HUY giữa hai bên do sai thông tin hàng hóa\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/invoices/{{invoiceId}}/cancel",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "invoices", "{{invoiceId}}", "cancel"]
             }
-          }
-        },
-        {
-          "name": "2.3 Replace Invoice (ISSUED -> REPLACED)",
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -185,12 +197,33 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"customerName\": \"Công ty Cổ phần Thương mại Alpha (Hóa Đơn Thay Thế)\",\n  \"customerTaxCode\": \"0108888888\",\n  \"customerEmail\": \"alpha@example.com\",\n  \"customerAddress\": \"Tầng 8, Tòa nhà Landmark 72, Cầu Giấy, Hà Nội\",\n  \"sellerName\": \"Công ty Cổ phần Giải pháp Phần mềm TechVN\",\n  \"sellerTaxCode\": \"0309876543\",\n  \"sellerAddress\": \"Số 123 Đường Nguyễn Huệ, Quận 1, TP. Hồ Chí Minh\",\n  \"sellerPhone\": \"0901234567\",\n  \"vatRate\": 10,\n  \"notes\": \"Thay thế cho hóa đơn cũ do điều chỉnh đơn giá\",\n  \"items\": [\n    {\n      \"description\": \"Phần mềm quản lý hóa đơn (Phiên bản 2.0 Chính thức)\",\n      \"unit\": \"Gói\",\n      \"quantity\": 1,\n      \"unitPrice\": 20000000\n    }\n  ]\n}"
+              "raw": "{\n  \"customerName\": \"Công ty Cổ phần Thương mại Alpha (Thay Thế)\",\n  \"customerTaxCode\": \"0108888888\",\n  \"customerEmail\": \"alpha@example.com\",\n  \"customerAddress\": \"Tầng 8, Tòa nhà Landmark 72, Cầu Giấy, Hà Nội\",\n  \"sellerName\": \"Công ty Cổ phần Giải pháp Phần mềm TechVN\",\n  \"sellerTaxCode\": \"0309876543\",\n  \"sellerAddress\": \"Số 123 Đường Nguyễn Huệ, Quận 1, TP. Hồ Chí Minh\",\n  \"sellerPhone\": \"0901234567\",\n  \"vatRate\": 10,\n  \"agreementMinutes\": \"01/BB-TT\",\n  \"notes\": \"Hóa đơn thay thế do sai sót đơn giá\",\n  \"items\": [\n    {\n      \"description\": \"Phần mềm quản lý hóa đơn (Gói Doanh Nghiệp Chuẩn)\",\n      \"unit\": \"Gói\",\n      \"quantity\": 1,\n      \"unitPrice\": 16000000\n    }\n  ]\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/invoices/{{invoiceId}}/replace",
               "host": ["{{baseUrl}}"],
               "path": ["api", "invoices", "{{invoiceId}}", "replace"]
+            }
+          }
+        },
+        {
+          "name": "2.3 Cancel Invoice (ISSUED -> CANCELED)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cancelReason\": \"Hủy theo biên bản thỏa thuận số 01/BB-HUY giữa hai bên do hủy hợp đồng cung cấp dịch vụ\",\n  \"agreementMinutes\": \"01/BB-HUY\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/invoices/{{invoiceId}}/cancel",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "invoices", "{{invoiceId}}", "cancel"]
             }
           }
         }
@@ -200,7 +233,19 @@
       "name": "3. PDF Export & Download",
       "item": [
         {
-          "name": "3.1 Download Invoice PDF",
+          "name": "3.1 Preview PDF Stream",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/invoices/{{invoiceId}}/pdf",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "invoices", "{{invoiceId}}", "pdf"]
+            }
+          }
+        },
+        {
+          "name": "3.2 Download PDF Attachment",
           "request": {
             "method": "GET",
             "header": [],
@@ -211,18 +256,6 @@
               "query": [
                 { "key": "download", "value": "true" }
               ]
-            }
-          }
-        },
-        {
-          "name": "3.2 View Invoice PDF (Stream)",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/invoices/{{invoiceId}}/pdf",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "invoices", "{{invoiceId}}", "pdf"]
             }
           }
         }

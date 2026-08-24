@@ -1,0 +1,15 @@
+# Use this workspace to collaborate
+workspace:
+  id: 2ed7814a-6037-4439-838b-088c6780cb4a
+
+# Each entry here maps a local resource to one or more corresponding objects in Postman Cloud
+
+cloudResources:
+  collections:
+    ../postman/collections/Invoice Management System API (Decree 123 Compliant): c1f7b8e2-8888-4444-9999-invoicemanagement
+
+# All resources in the `postman/` folder are automatically registered in Local View.
+# Point to additional files outside the `postman/` folder to register them individually. Example:
+#localResources:
+#  collections:
+#    - ../tests/E2E Test Collection/
