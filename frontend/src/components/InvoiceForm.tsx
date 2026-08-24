@@ -229,14 +229,15 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                 </div>
                 <div>
                   <label className="block font-label-md text-label-md text-on-surface-variant mb-1">
-                    Mã số thuế (MST) <span className="text-error font-bold">*</span>
+                    Mã số thuế bên bán (10 - 13 số) <span className="text-error font-bold">*</span>
                   </label>
                   <input
                     type="text"
                     required
+                    maxLength={14}
                     value={sellerTaxCode}
                     onChange={(e) => setSellerTaxCode(e.target.value)}
-                    placeholder="VD: 0101234567"
+                    placeholder="VD: 0101234567 hoặc 0101234567-001"
                     className="w-full bg-surface border border-outline-variant rounded px-3 py-2 text-body-sm focus:outline-none focus:border-primary-container font-mono"
                   />
                 </div>
@@ -301,13 +302,14 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                 </div>
                 <div>
                   <label className="block font-label-md text-label-md text-on-surface-variant mb-1">
-                    Mã số thuế (MST)
+                    Mã số thuế (10 - 13 số)
                   </label>
                   <input
                     type="text"
+                    maxLength={14}
                     value={customerTaxCode}
                     onChange={(e) => setCustomerTaxCode(e.target.value)}
-                    placeholder="VD: 0319876543"
+                    placeholder="VD: 0319876543 hoặc 0101234567-001"
                     className="w-full bg-surface border border-outline-variant rounded px-3 py-2 text-body-sm focus:outline-none focus:border-primary-container font-mono"
                   />
                 </div>
