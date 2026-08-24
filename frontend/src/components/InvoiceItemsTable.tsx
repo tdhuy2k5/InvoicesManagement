@@ -9,19 +9,18 @@ export interface InvoiceItemRow {
   amount: number;
 }
 
-export interface InvoiceItemsTableIslandProps {
+export interface InvoiceItemsTableProps {
   items?: InvoiceItemRow[];
   emptyMessage?: string;
   className?: string;
 }
 
 /**
- * InvoiceItemsTableIsland
+ * InvoiceItemsTable
  * Itemized goods and services table component for Invoice Detail and Preview.
- * Matches graph-master.cypher: `:SharedIsland { id: "InvoiceItemsTableIsland" }`
  * Mounted on: `InvoiceDetail` (`/invoices/:id`)
  */
-export const InvoiceItemsTableIsland: React.FC<InvoiceItemsTableIslandProps> = ({
+export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
   items = [
     {
       id: 1,
@@ -102,4 +101,4 @@ export const InvoiceItemsTableIsland: React.FC<InvoiceItemsTableIslandProps> = (
   );
 };
 
-export default InvoiceItemsTableIsland;
+export default InvoiceItemsTable;

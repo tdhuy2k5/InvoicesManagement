@@ -1,7 +1,7 @@
 import React from 'react';
 import { useInvoiceReplacement } from '../hooks/useInvoiceReplacement';
 
-export interface InvoiceReplacementBannerIslandProps {
+export interface InvoiceReplacementBannerProps {
   /** Original invoice number being replaced (e.g. HD-2026-00018) */
   originalInvoiceNumber?: string;
   /** Original invoice ID in database */
@@ -25,14 +25,12 @@ export interface InvoiceReplacementBannerIslandProps {
 export { useInvoiceReplacement };
 
 /**
- * InvoiceReplacementBannerIsland
- * Legal notice banner & context island for the Invoice Replacement screen.
+ * InvoiceReplacementBanner
+ * Legal notice banner & context for the Invoice Replacement screen.
  * Complies with Vietnamese e-invoice regulations (Nghị định 123/2020/NĐ-CP).
- * 
- * Matches graph-master.cypher: `:SharedIsland { id: "InvoiceReplacementBannerIsland", visibleIf: "invoice.status == 'ISSUED'" }`
  * Mounted on: `InvoiceReplace` (`/invoices/:id/replace`)
  */
-export const InvoiceReplacementBannerIsland: React.FC<InvoiceReplacementBannerIslandProps> = ({
+export const InvoiceReplacementBanner: React.FC<InvoiceReplacementBannerProps> = ({
   originalInvoiceNumber = 'HD-2026-00018',
   originalInvoiceId,
   originalIssueDate = '15/08/2026',
@@ -149,13 +147,13 @@ export const InvoiceReplacementBannerIsland: React.FC<InvoiceReplacementBannerIs
           <div className="flex items-center gap-1.5">
             <span className="material-symbols-outlined text-[15px] text-amber-700">change_circle</span>
             <span>
-              <strong>Hiệu lực:</strong> Khi phát hành, hóa đơn gốc (<strong>{originalInvoiceNumber}</strong>) sẽ tự động chuyển sang trạng thái <strong className="text-amber-950">REPLACED (Bị thay thế)</strong> và mất giá trị pháp lý.
+              <strong>Hiệu lực pháp lý:</strong> Hóa đơn gốc (<strong>{originalInvoiceNumber}</strong>) sẽ tự động chuyển sang trạng thái <strong className="text-amber-950">REPLACED (Bị thay thế)</strong> theo Biên bản thỏa thuận 2 bên.
             </span>
           </div>
           <div className="flex items-center gap-1.5">
             <span className="material-symbols-outlined text-[15px] text-emerald-700">verified</span>
             <span>
-              <strong>Hóa đơn mới:</strong> Sẽ mang trạng thái <strong className="text-emerald-800">ISSUED (Đã phát hành)</strong> với số hóa đơn mới theo dải ký hiệu sequence.
+              <strong>Cấp Mã CQT Mới:</strong> Hóa đơn thay thế sẽ được cấp <strong>Số hóa đơn mới liên tục (Zero-Gap)</strong> và nhận <strong>Mã CQT mới</strong> từ Cổng Tổng Cục Thuế.
             </span>
           </div>
         </div>
@@ -164,4 +162,4 @@ export const InvoiceReplacementBannerIsland: React.FC<InvoiceReplacementBannerIs
   );
 };
 
-export default InvoiceReplacementBannerIsland;
+export default InvoiceReplacementBanner;

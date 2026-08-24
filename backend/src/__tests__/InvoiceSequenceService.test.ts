@@ -24,6 +24,18 @@ describe('InvoiceSequenceService Unit Tests', () => {
     });
   });
 
+  describe('generateDraftCode', () => {
+    it('should generate draft codes with prefix and not call PostgreSQL sequence', () => {
+      const service = new InvoiceSequenceService();
+      const code1 = service.generateDraftCode();
+      const code2 = service.generateDraftCode('DRAFT');
+
+      expect(code1.startsWith('NHAP-')).toBe(true);
+      expect(code2.startsWith('DRAFT-')).toBe(true);
+      expect(code1).not.toBe(code2);
+    });
+  });
+
   describe('generateInvoiceNumber with customFetcher', () => {
     it('should use custom fetcher when provided with zone', async () => {
       const mockFetcher: ISequenceFetcher = {
@@ -40,6 +52,7 @@ describe('InvoiceSequenceService Unit Tests', () => {
   describe('generateInvoiceNumber with Prisma SQL sequence (Fail-Fast)', () => {
     it('should fetch nextval from PostgreSQL serial sequence and format with default zone', async () => {
       const mockPrisma = {
+        $executeRaw: vi.fn().mockResolvedValue(1),
         $queryRaw: vi.fn().mockResolvedValue([{ next_val: 15n }]),
       } as unknown as PrismaClient;
 
@@ -52,6 +65,7 @@ describe('InvoiceSequenceService Unit Tests', () => {
 
     it('should fail-fast and throw an explicit error when PostgreSQL sequence query fails', async () => {
       const mockPrisma = {
+        $executeRaw: vi.fn().mockResolvedValue(1),
         $queryRaw: vi.fn().mockRejectedValue(new Error('Sequence invoice_sequenceNumber_seq not found')),
       } as unknown as PrismaClient;
 
@@ -63,6 +77,7 @@ describe('InvoiceSequenceService Unit Tests', () => {
 
     it('should fail-fast and throw an explicit error if database returns empty result', async () => {
       const mockPrisma = {
+        $executeRaw: vi.fn().mockResolvedValue(1),
         $queryRaw: vi.fn().mockResolvedValue([]),
       } as unknown as PrismaClient;
 

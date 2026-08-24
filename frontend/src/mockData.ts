@@ -35,7 +35,12 @@ export interface InvoiceEntity {
   customerPhone?: string;
   customerEmail?: string;
   customerRepresentative?: string;
+  customerBankAccount?: string;
   paymentMethod: string;
+  templateCode?: string;
+  zone?: string;
+  sequenceNumber?: number;
+  taxDepartment?: string;
 
   // Line Items & Totals
   items: InvoiceItem[];
@@ -52,6 +57,8 @@ export interface InvoiceEntity {
   replacedById?: string | null;
   replacementInvoiceNumber?: string | null;
   cancelReason?: string | null;
+  taxAuthorityCode?: string | null;
+  agreementMinutes?: string | null;
 }
 
 export const INITIAL_MOCK_INVOICES: InvoiceEntity[] = [
@@ -59,6 +66,7 @@ export const INITIAL_MOCK_INVOICES: InvoiceEntity[] = [
     id: '1',
     invoiceNumber: 'HD-2026-00042',
     serialNumber: '1C26TAA',
+    taxAuthorityCode: '00E26TAA99182345',
     status: 'ISSUED',
     issueDate: '2026-08-22T15:00:12.000Z',
     createdAt: '2026-08-22T14:30:00.000Z',

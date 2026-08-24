@@ -11,7 +11,7 @@ export interface InvoiceStatusCount {
   canceled?: number;
 }
 
-export interface InvoiceFilterIslandProps {
+export interface InvoiceFilterProps {
   currentStatus?: InvoiceStatusFilter;
   searchTerm?: string;
   vatRateFilter?: string;
@@ -47,10 +47,10 @@ export interface InvoiceFilterIslandProps {
 export { useInvoiceFilter };
 
 /**
- * InvoiceFilterIsland
- * Filter Bar, Search, Interactive Date Range Picker, Advanced Filters, and Contextual Action Trigger Island for Invoice List.
+ * InvoiceFilter
+ * Filter Bar, Search, Interactive Date Range Picker, Advanced Filters, and Contextual Action Trigger for Invoice List.
  */
-export const InvoiceFilterIsland: React.FC<InvoiceFilterIslandProps> = ({
+export const InvoiceFilter: React.FC<InvoiceFilterProps> = ({
   currentStatus = 'ALL',
   searchTerm = '',
   vatRateFilter = 'ALL',
@@ -84,10 +84,10 @@ export const InvoiceFilterIsland: React.FC<InvoiceFilterIslandProps> = ({
 }) => {
   const statusTabs: { id: InvoiceStatusFilter; label: string; count?: number }[] = [
     { id: 'ALL', label: 'Tất cả', count: statusCounts.all },
-    { id: 'DRAFT', label: 'Bản nháp', count: statusCounts.draft },
-    { id: 'ISSUED', label: 'Đã phát hành', count: statusCounts.issued },
-    { id: 'REPLACED', label: 'Đã thay thế', count: statusCounts.replaced },
-    { id: 'CANCELED', label: 'Đã hủy', count: statusCounts.canceled },
+    { id: 'DRAFT', label: 'DRAFT', count: statusCounts.draft },
+    { id: 'ISSUED', label: 'ISSUED', count: statusCounts.issued },
+    { id: 'REPLACED', label: 'REPLACED', count: statusCounts.replaced },
+    { id: 'CANCELED', label: 'CANCELED', count: statusCounts.canceled },
   ];
 
   const hasSelection = Boolean(selectedInvoiceId);
@@ -468,4 +468,4 @@ export const InvoiceFilterIsland: React.FC<InvoiceFilterIslandProps> = ({
   );
 };
 
-export default InvoiceFilterIsland;
+export default InvoiceFilter;

@@ -3,7 +3,7 @@ import { useInvoiceDetailActions } from '../hooks/useInvoiceDetailActions';
 
 export type InvoiceStatus = 'DRAFT' | 'ISSUED' | 'REPLACED' | 'CANCELED';
 
-export interface InvoiceHeaderDetailIslandProps {
+export interface InvoiceHeaderDetailProps {
   id: string;
   invoiceNumber: string;
   status: InvoiceStatus;
@@ -15,6 +15,7 @@ export interface InvoiceHeaderDetailIslandProps {
   replacedById?: string | null;
   replacementInvoiceNumber?: string | null;
   cancelReason?: string | null;
+  taxAuthorityCode?: string | null;
   onBackToList?: () => void;
   onEditDraft?: () => void;
   onIssueInvoice?: () => void;
@@ -24,6 +25,7 @@ export interface InvoiceHeaderDetailIslandProps {
   onCancelInvoice?: () => void;
   onDownloadPdf?: () => void;
   onPrintPreview?: () => void;
+  onVerifyTax?: () => void;
   onViewOriginalInvoice?: (id: string) => void;
   onViewReplacementInvoice?: (id: string) => void;
 }
@@ -31,9 +33,8 @@ export interface InvoiceHeaderDetailIslandProps {
 export { useInvoiceDetailActions };
 
 /**
- * InvoiceHeaderDetailIsland
- * Action Header & Replacement Banner Island for Invoice Detail Screen.
- * Matches graph-master.cypher: `:SharedIsland { id: "InvoiceHeaderDetailIsland" }`
+ * InvoiceHeaderDetail
+ * Action Header & Replacement Banner for Invoice Detail Screen.
  * Navigation & Action Edges:
  * - `backToInvoiceList` -> `/invoices`
  * - `editDraftFromDetail` -> `/invoices/:id/edit`
@@ -45,7 +46,7 @@ export { useInvoiceDetailActions };
  * - `openCancelModalFromDetail` (executes: validateCancelTransition)
  * - `openDeleteModalFromDetail` (executes: validateDraftModification)
  */
-export const InvoiceHeaderDetailIsland: React.FC<InvoiceHeaderDetailIslandProps> = ({
+export const InvoiceHeaderDetail: React.FC<InvoiceHeaderDetailProps> = ({
   id,
   invoiceNumber,
   status,
@@ -57,6 +58,7 @@ export const InvoiceHeaderDetailIsland: React.FC<InvoiceHeaderDetailIslandProps>
   replacedById,
   replacementInvoiceNumber,
   cancelReason,
+  taxAuthorityCode,
   onBackToList,
   onEditDraft,
   onIssueInvoice,
@@ -66,6 +68,7 @@ export const InvoiceHeaderDetailIsland: React.FC<InvoiceHeaderDetailIslandProps>
   onCancelInvoice,
   onDownloadPdf,
   onPrintPreview,
+  onVerifyTax,
   onViewOriginalInvoice,
   onViewReplacementInvoice,
 }) => {
@@ -89,30 +92,30 @@ export const InvoiceHeaderDetailIsland: React.FC<InvoiceHeaderDetailIslandProps>
     switch (status) {
       case 'DRAFT':
         return (
-          <span className="bg-blue-50 text-blue-700 border border-blue-200 px-2.5 py-0.5 rounded font-label-md text-label-md flex items-center gap-1.5 font-semibold">
+          <span className="bg-blue-50 text-blue-700 border border-blue-200 px-2.5 py-0.5 rounded font-label-md text-label-md flex items-center gap-1.5 font-semibold font-mono">
             <span className="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
-            BẢN NHÁP
+            DRAFT
           </span>
         );
       case 'ISSUED':
         return (
-          <span className="bg-secondary-container/20 text-secondary border border-secondary/30 px-2.5 py-0.5 rounded font-label-md text-label-md flex items-center gap-1.5 font-semibold">
+          <span className="bg-secondary-container/20 text-secondary border border-secondary/30 px-2.5 py-0.5 rounded font-label-md text-label-md flex items-center gap-1.5 font-semibold font-mono">
             <span className="w-1.5 h-1.5 rounded-full bg-secondary"></span>
-            ĐÃ PHÁT HÀNH
+            ISSUED
           </span>
         );
       case 'REPLACED':
         return (
-          <span className="bg-amber-50 text-amber-700 border border-amber-200 px-2.5 py-0.5 rounded font-label-md text-label-md flex items-center gap-1.5 font-semibold">
+          <span className="bg-amber-50 text-amber-700 border border-amber-200 px-2.5 py-0.5 rounded font-label-md text-label-md flex items-center gap-1.5 font-semibold font-mono">
             <span className="w-1.5 h-1.5 rounded-full bg-amber-600"></span>
-            ĐÃ THAY THẾ
+            REPLACED
           </span>
         );
       case 'CANCELED':
         return (
-          <span className="bg-rose-50 text-rose-700 border border-rose-200 px-2.5 py-0.5 rounded font-label-md text-label-md flex items-center gap-1.5 font-semibold">
+          <span className="bg-rose-50 text-rose-700 border border-rose-200 px-2.5 py-0.5 rounded font-label-md text-label-md flex items-center gap-1.5 font-semibold font-mono">
             <span className="w-1.5 h-1.5 rounded-full bg-rose-600"></span>
-            ĐÃ HỦY
+            CANCELED
           </span>
         );
       default:
@@ -145,11 +148,17 @@ export const InvoiceHeaderDetailIsland: React.FC<InvoiceHeaderDetailIslandProps>
       {/* Main Title & Action Buttons */}
       <div className="flex justify-between items-start md:items-center flex-col md:flex-row gap-4">
         <div>
-          <div className="flex items-center gap-3 mb-1">
+          <div className="flex flex-wrap items-center gap-2.5 mb-1">
             <h2 className="font-headline-lg text-headline-lg text-primary font-bold">
               {invoiceNumber}
             </h2>
             {renderStatusBadge()}
+            {taxAuthorityCode && (
+              <span className="bg-emerald-50 text-emerald-800 border border-emerald-300 px-2.5 py-0.5 rounded font-mono text-xs flex items-center gap-1.5 font-semibold">
+                <span className="material-symbols-outlined text-emerald-600 text-[14px]">account_balance</span>
+                Mã CQT: {taxAuthorityCode}
+              </span>
+            )}
           </div>
           <p className="font-body-sm text-body-sm text-on-surface-variant">
             Ngày lập: {formatDate(issueDate || createdAt)}
@@ -159,6 +168,18 @@ export const InvoiceHeaderDetailIsland: React.FC<InvoiceHeaderDetailIslandProps>
 
         {/* Action Button Bar */}
         <div className="flex flex-wrap gap-2">
+          {onVerifyTax && (
+            <button
+              type="button"
+              onClick={onVerifyTax}
+              className="px-3.5 py-2 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-lg font-tabular-nums text-tabular-nums hover:opacity-90 transition flex items-center gap-1.5 shadow-sm text-xs font-bold"
+              title="Tra cứu trực tiếp trên Cổng Hóa Đơn Điện Tử Tổng Cục Thuế"
+            >
+              <span className="material-symbols-outlined text-[16px] text-amber-200">account_balance</span>
+              <span>Tra Cứu Cổng Thuế</span>
+            </button>
+          )}
+
           {canEdit && (
             <button
               type="button"
@@ -297,4 +318,4 @@ export const InvoiceHeaderDetailIsland: React.FC<InvoiceHeaderDetailIslandProps>
   );
 };
 
-export default InvoiceHeaderDetailIsland;
+export default InvoiceHeaderDetail;

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { InvoiceVatTemplateIsland } from './InvoiceVatTemplateIsland';
+import { InvoiceVatTemplate } from './InvoiceVatTemplate';
 import { InvoiceItem } from '../mockData';
 import { invoiceApi } from '../services/invoiceApi';
 
-export interface InvoicePrintModalIslandProps {
+export interface InvoicePrintModalProps {
   isOpen: boolean;
   onClose: () => void;
 
@@ -39,13 +39,14 @@ export interface InvoicePrintModalIslandProps {
   signedBy?: string | null;
   signedAt?: string | null;
   originalInvoiceId?: string | null;
+  taxAuthorityCode?: string | null;
 }
 
 /**
- * InvoicePrintModalIsland
+ * InvoicePrintModal
  * Modal xem trước và in ấn hóa đơn GTGT chuẩn theo mẫu Bộ Tài Chính
  */
-export const InvoicePrintModalIsland: React.FC<InvoicePrintModalIslandProps> = ({
+export const InvoicePrintModal: React.FC<InvoicePrintModalProps> = ({
   isOpen,
   onClose,
   invoiceId,
@@ -57,6 +58,7 @@ export const InvoicePrintModalIsland: React.FC<InvoicePrintModalIslandProps> = (
   createdAt,
   status = 'DRAFT',
   taxDepartment = 'CỤC THUẾ TP. HÀ NỘI',
+  taxAuthorityCode,
   sellerName,
   sellerTaxCode,
   sellerAddress,
@@ -225,7 +227,7 @@ export const InvoicePrintModalIsland: React.FC<InvoicePrintModalIslandProps> = (
             className="w-full flex justify-center transition-transform duration-200 print:transform-none"
             style={{ transform: `scale(${zoomLevel / 100})`, transformOrigin: 'top center' }}
           >
-            <InvoiceVatTemplateIsland
+            <InvoiceVatTemplate
               templateCode={templateCode}
               serialNumber={serialNumber}
               invoiceNumber={invoiceNumber}
@@ -254,6 +256,7 @@ export const InvoicePrintModalIsland: React.FC<InvoicePrintModalIslandProps> = (
               signerName={signedBy || sellerName}
               signedAt={signedAt}
               originalInvoiceId={originalInvoiceId}
+              taxAuthorityCode={taxAuthorityCode}
               status={status}
             />
           </div>
@@ -263,4 +266,4 @@ export const InvoicePrintModalIsland: React.FC<InvoicePrintModalIslandProps> = (
   );
 };
 
-export default InvoicePrintModalIsland;
+export default InvoicePrintModal;

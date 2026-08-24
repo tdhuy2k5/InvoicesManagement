@@ -436,6 +436,14 @@ async function main() {
     },
   });
 
+  // Đồng bộ PostgreSQL sequence với số sequence lớn nhất hiện tại
+  await prisma.$executeRaw`
+    CREATE SEQUENCE IF NOT EXISTS "Invoice_sequenceNumber_seq";
+  `;
+  await prisma.$executeRaw`
+    SELECT setval('"Invoice_sequenceNumber_seq"', (SELECT COALESCE(MAX("sequenceNumber"), 0) FROM "Invoice"));
+  `;
+
   console.log('✅ Đã nạp thành công 7 hóa đơn mẫu (bao gồm hóa đơn dài 18 mục):');
   console.log(`  1. [ISSUED]   ${inv1.invoiceNumber} - ${inv1.customerName}`);
   console.log(`  2. [ISSUED]   ${inv2.invoiceNumber} - ${inv2.customerName}`);

@@ -17,7 +17,7 @@ model Invoice {
   id                  String        @id @default(uuid())
   templateCode        String        @default("01GTKT3/001")
   zone                String        @default("1C26TAA")
-  sequenceNumber      Int           @default(autoincrement())
+  sequenceNumber      Int?
   invoiceNumber       String        @unique
   status              InvoiceStatus @default(DRAFT)
   customerName        String
@@ -34,6 +34,8 @@ model Invoice {
   sellerEmail         String?
   sellerBankAccount   String?
   taxDepartment       String?
+  taxAuthorityCode    String?       // Mã Cơ Quan Thuế cấp (Ví dụ: 00E26TAA99182345)
+  agreementMinutes    String?       // Biên bản thỏa thuận điện tử 2 bên (Nghị định 123)
   totalAmount         Decimal
   vatAmount           Decimal
   vatRate             Int

@@ -1,15 +1,15 @@
 import React from 'react';
 import { useInvoice } from '../context/InvoiceContext';
 import { useInvoiceEdit } from '../hooks/useInvoiceEdit';
-import { GlobalHeaderIsland } from '../components/GlobalHeaderIsland';
-import { InvoiceFormIsland } from '../components/InvoiceFormIsland';
+import { GlobalHeader } from '../components/GlobalHeader';
+import { InvoiceForm } from '../components/InvoiceForm';
 
 /**
  * InvoiceEditPage (`InvoiceEdit`)
  * Route: `/invoices/:id/edit`
  * Assembled from:
- * - GlobalHeaderIsland
- * - InvoiceFormIsland (mode="EDIT")
+ * - GlobalHeader
+ * - InvoiceForm (mode="EDIT")
  * 
  * Enforces Visibility & Mutation Guard: `invoice.status == "DRAFT"` (StateMachineGuard.validateDraftModification)
  * Wired with Backend Core:
@@ -33,7 +33,7 @@ export const InvoiceEditPage: React.FC = () => {
   if (!invoice) {
     return (
       <div className="min-h-screen bg-background text-on-surface flex flex-col font-sans">
-        <GlobalHeaderIsland
+        <GlobalHeader
           appName="AuditorPro Hóa Đơn"
           activeNav="invoices"
           onNavigateToInvoiceList={() => navigate('/invoices')}
@@ -63,7 +63,7 @@ export const InvoiceEditPage: React.FC = () => {
   if (!validationState.isValid) {
     return (
       <div className="min-h-screen bg-background text-on-surface flex flex-col font-sans">
-        <GlobalHeaderIsland
+        <GlobalHeader
           appName="AuditorPro Hóa Đơn"
           activeNav="invoices"
           onNavigateToInvoiceList={() => navigate('/invoices')}
@@ -107,8 +107,8 @@ export const InvoiceEditPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background text-on-surface flex flex-col font-sans">
-      {/* Global Header Island */}
-      <GlobalHeaderIsland
+      {/* Global Header */}
+      <GlobalHeader
         appName="AuditorPro Hóa Đơn"
         activeNav="invoices"
         onNavigateToInvoiceList={() => navigate('/invoices')}
@@ -135,17 +135,17 @@ export const InvoiceEditPage: React.FC = () => {
               <h1 className="font-headline-lg text-xl sm:text-2xl font-bold text-primary">
                 Chỉnh Sửa Bản Nháp Hóa Đơn: {invoice.invoiceNumber}
               </h1>
-              <span className="bg-blue-50 text-blue-700 border border-blue-200 px-2.5 py-0.5 rounded text-xs font-semibold">
-                BẢN NHÁP
+              <span className="bg-blue-50 text-blue-700 border border-blue-200 px-2.5 py-0.5 rounded text-xs font-semibold font-mono">
+                DRAFT
               </span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Main Form Island in EDIT Mode */}
+      {/* Main Form in EDIT Mode */}
       <main className="flex-1 w-full max-w-[1440px] mx-auto overflow-hidden">
-        <InvoiceFormIsland
+        <InvoiceForm
           mode="EDIT"
           initialData={initialFormData}
           isSubmitting={isSubmitting}

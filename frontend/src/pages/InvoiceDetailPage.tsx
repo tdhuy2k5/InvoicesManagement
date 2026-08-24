@@ -1,15 +1,16 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useInvoice } from '../context/InvoiceContext';
 import { useInvoiceDetailActions } from '../hooks/useInvoiceDetailActions';
-import { GlobalHeaderIsland } from '../components/GlobalHeaderIsland';
-import { InvoiceHeaderDetailIsland } from '../components/InvoiceHeaderDetailIsland';
-import { InvoicePartyInfoIsland } from '../components/InvoicePartyInfoIsland';
-import { InvoiceItemsTableIsland } from '../components/InvoiceItemsTableIsland';
-import { InvoiceSummaryIsland } from '../components/InvoiceSummaryIsland';
-import { InvoicePrintModalIsland } from '../components/InvoicePrintModalIsland';
-import { InvoiceIssueModalIsland } from '../components/InvoiceIssueModalIsland';
-import { InvoiceCancelModalIsland } from '../components/InvoiceCancelModalIsland';
-import { InvoiceDeleteModalIsland } from '../components/InvoiceDeleteModalIsland';
+import { GlobalHeader } from '../components/GlobalHeader';
+import { InvoiceHeaderDetail } from '../components/InvoiceHeaderDetail';
+import { InvoicePartyInfo } from '../components/InvoicePartyInfo';
+import { InvoiceItemsTable } from '../components/InvoiceItemsTable';
+import { InvoiceSummary } from '../components/InvoiceSummary';
+import { InvoicePrintModal } from '../components/InvoicePrintModal';
+import { InvoiceIssueModal } from '../components/InvoiceIssueModal';
+import { InvoiceCancelModal } from '../components/InvoiceCancelModal';
+import { InvoiceDeleteModal } from '../components/InvoiceDeleteModal';
+import { TaxVerificationModal } from '../components/TaxVerificationModal';
 import { invoiceApi } from '../services/invoiceApi';
 
 /**
@@ -44,6 +45,8 @@ export const InvoiceDetailPage: React.FC = () => {
 
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  const [taxModalOpen, setTaxModalOpen] = useState(false);
 
   // Fetch invoice if not in cache
   useEffect(() => {
@@ -106,7 +109,7 @@ export const InvoiceDetailPage: React.FC = () => {
   if (!invoice) {
     return (
       <div className="min-h-screen bg-background text-on-surface flex flex-col font-sans">
-        <GlobalHeaderIsland
+        <GlobalHeader
           appName="AuditorPro Hóa Đơn"
           activeNav="invoices"
           onNavigateToInvoiceList={() => navigate('/invoices')}
@@ -168,16 +171,16 @@ export const InvoiceDetailPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background text-on-surface flex flex-col font-sans">
-      {/* Global Header Island */}
-      <GlobalHeaderIsland
+      {/* Global Header */}
+      <GlobalHeader
         appName="AuditorPro Hóa Đơn"
         activeNav="invoices"
         onNavigateToInvoiceList={() => navigate('/invoices')}
         onNavigateToCreateInvoice={() => navigate('/invoices/new')}
       />
 
-      {/* Invoice Header Detail Island */}
-      <InvoiceHeaderDetailIsland
+      {/* Invoice Header Detail */}
+      <InvoiceHeaderDetail
         id={invoice.id}
         invoiceNumber={invoice.invoiceNumber}
         status={invoice.status}
@@ -189,6 +192,7 @@ export const InvoiceDetailPage: React.FC = () => {
         replacedById={invoice.replacedById}
         replacementInvoiceNumber={replacementInvoice?.invoiceNumber || invoice.replacementInvoiceNumber}
         cancelReason={invoice.cancelReason}
+        taxAuthorityCode={invoice.taxAuthorityCode}
         onBackToList={() => navigate('/invoices')}
         onEditDraft={handleEdit}
         onIssueInvoice={handleOpenIssue}
@@ -196,6 +200,7 @@ export const InvoiceDetailPage: React.FC = () => {
         onCloneInvoice={handleCloneInvoice}
         onReplaceInvoice={handleReplace}
         onCancelInvoice={handleOpenCancel}
+        onVerifyTax={() => setTaxModalOpen(true)}
         onPrintPreview={() => setPrintModalOpen(true)}
         onDownloadPdf={handleDownloadPdf}
         onViewOriginalInvoice={(origId) => navigate('/invoices/:id', { id: origId })}
@@ -204,8 +209,8 @@ export const InvoiceDetailPage: React.FC = () => {
 
       {/* Main Full-Width Workspace (Expanded 12 cols layout) */}
       <main className="flex-1 w-full max-w-[1440px] mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
-        {/* Party Information Island */}
-        <InvoicePartyInfoIsland
+        {/* Party Information */}
+        <InvoicePartyInfo
           sellerName={invoice.sellerName}
           sellerTaxCode={invoice.sellerTaxCode}
           sellerAddress={invoice.sellerAddress}
@@ -222,7 +227,7 @@ export const InvoiceDetailPage: React.FC = () => {
           paymentMethod={invoice.paymentMethod}
         />
 
-        {/* Line Items Table Island */}
+        {/* Line Items Table */}
         <div className="space-y-2">
           <h3 className="font-label-md text-sm font-semibold text-primary uppercase tracking-wider flex items-center justify-between px-1">
             <span>Danh Mục Hàng Hóa &amp; Dịch Vụ</span>
@@ -230,11 +235,11 @@ export const InvoiceDetailPage: React.FC = () => {
               ({invoice.items.length} dòng)
             </span>
           </h3>
-          <InvoiceItemsTableIsland items={invoice.items} />
+          <InvoiceItemsTable items={invoice.items} />
         </div>
 
-        {/* Financial Summary Island */}
-        <InvoiceSummaryIsland
+        {/* Financial Summary */}
+        <InvoiceSummary
           subtotalAmount={invoice.subtotalAmount}
           vatRate={invoice.vatRate}
           vatAmount={invoice.vatAmount}
@@ -244,8 +249,8 @@ export const InvoiceDetailPage: React.FC = () => {
         />
       </main>
 
-      {/* VAT Print & Preview Modal Island */}
-      <InvoicePrintModalIsland
+      {/* VAT Print & Preview Modal */}
+      <InvoicePrintModal
         isOpen={printModalOpen}
         onClose={() => setPrintModalOpen(false)}
         invoiceId={invoice.id}
@@ -276,10 +281,18 @@ export const InvoiceDetailPage: React.FC = () => {
         signedBy={invoice.signedBy}
         signedAt={invoice.signedAt}
         originalInvoiceId={invoice.originalInvoiceId}
+        taxAuthorityCode={invoice.taxAuthorityCode}
       />
 
-      {/* Issue Modal Island */}
-      <InvoiceIssueModalIsland
+      {/* Public Tax Authority Verification Modal */}
+      <TaxVerificationModal
+        isOpen={taxModalOpen}
+        onClose={() => setTaxModalOpen(false)}
+        invoice={invoice}
+      />
+
+      {/* Issue Modal */}
+      <InvoiceIssueModal
         isOpen={issueModalOpen}
         invoiceId={invoice.id}
         invoiceNumber={invoice.invoiceNumber}
@@ -292,8 +305,8 @@ export const InvoiceDetailPage: React.FC = () => {
         onConfirm={handleConfirmIssue}
       />
 
-      {/* Cancel Modal Island */}
-      <InvoiceCancelModalIsland
+      {/* Cancel Modal */}
+      <InvoiceCancelModal
         isOpen={cancelModalOpen}
         invoiceId={invoice.id}
         invoiceNumber={invoice.invoiceNumber}
@@ -305,8 +318,8 @@ export const InvoiceDetailPage: React.FC = () => {
         onConfirm={handleConfirmCancel}
       />
 
-      {/* Delete Draft Modal Island */}
-      <InvoiceDeleteModalIsland
+      {/* Delete Draft Modal */}
+      <InvoiceDeleteModal
         isOpen={deleteModalOpen}
         invoiceId={invoice.id}
         invoiceNumber={invoice.invoiceNumber}

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDeleteDraftInvoice } from '../hooks/useDeleteDraftInvoice';
 
-export interface InvoiceDeleteModalIslandProps {
+export interface InvoiceDeleteModalProps {
   /** Controls modal visibility */
   isOpen: boolean;
   /** Callback to close or dismiss modal */
@@ -29,15 +29,12 @@ export interface InvoiceDeleteModalIslandProps {
 export { useDeleteDraftInvoice };
 
 /**
- * InvoiceDeleteModalIsland
+ * InvoiceDeleteModal
  * Confirmation modal for permanently deleting a draft invoice (DRAFT state only).
  * Complies with strict invariant that only unissued DRAFT invoices can be physically deleted.
- * 
- * Matches graph-master.cypher: `:SharedIsland { id: "InvoiceDeleteModalIsland", visibleIf: "invoice.status == 'DRAFT'" }`
  * Mounted on: `InvoiceList` (`/invoices`), `InvoiceDetail` (`/invoices/:id`)
- * Transitions: `:TRANSITIONS_TO { if: "isOpen == true", animation: "scaleUp" }`
  */
-export const InvoiceDeleteModalIsland: React.FC<InvoiceDeleteModalIslandProps> = ({
+export const InvoiceDeleteModal: React.FC<InvoiceDeleteModalProps> = ({
   isOpen,
   onClose,
   onConfirm,
@@ -198,4 +195,4 @@ export const InvoiceDeleteModalIsland: React.FC<InvoiceDeleteModalIslandProps> =
   );
 };
 
-export default InvoiceDeleteModalIsland;
+export default InvoiceDeleteModal;

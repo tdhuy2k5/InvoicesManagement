@@ -20,11 +20,13 @@ export interface InvoiceFormData {
   customerPhone: string;
   customerEmail: string;
   customerAddress: string;
+  customerBankAccount?: string;
   paymentMethod: string;
   sellerName: string;
   sellerTaxCode: string;
   sellerAddress: string;
   sellerPhone: string;
+  sellerEmail?: string;
   sellerBankAccount: string;
   items: FormInvoiceItem[];
   vatRate: number; // 0, 5, 8, 10, or -1 (KCT - Không chịu thuế)
@@ -34,7 +36,7 @@ export interface InvoiceFormData {
   notes: string;
 }
 
-export interface InvoiceFormIslandProps {
+export interface InvoiceFormProps {
   mode?: InvoiceFormMode;
   initialData?: Partial<InvoiceFormData>;
   isSubmitting?: boolean;
@@ -47,9 +49,8 @@ export interface InvoiceFormIslandProps {
 }
 
 /**
- * InvoiceFormIsland
+ * InvoiceForm
  * Dynamic Form Matrix for Creating, Editing, and Replacing Invoices.
- * Matches graph-master.cypher: `:SharedIsland { id: "InvoiceFormIsland" }`
  * Mounted on: `InvoiceCreate` (`/invoices/new`), `InvoiceEdit` (`/invoices/:id/edit`), `InvoiceReplace` (`/invoices/:id/replace`)
  * State Mutations:
  * - `recalculateTotals` (executes: calculateInvoiceTotals)
@@ -58,7 +59,7 @@ export interface InvoiceFormIslandProps {
  * - `submitUpdateDraft` (executes: updateDraftInvoice)
  * - `submitReplaceInvoice` (executes: replaceInvoice)
  */
-export const InvoiceFormIsland: React.FC<InvoiceFormIslandProps> = ({
+export const InvoiceForm: React.FC<InvoiceFormProps> = ({
   mode = 'CREATE',
   initialData,
   isSubmitting = false,
@@ -598,4 +599,4 @@ export const InvoiceFormIsland: React.FC<InvoiceFormIslandProps> = ({
   );
 };
 
-export default InvoiceFormIsland;
+export default InvoiceForm;

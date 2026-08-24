@@ -31,7 +31,15 @@ export interface IInvoiceRepository {
     status: InvoiceStatus,
     issueDate?: Date,
     cancelReason?: string,
-    replacedById?: number | string
+    replacedById?: number | string,
+    agreementMinutes?: string
+  ): Promise<InvoiceModel>;
+  issueInvoiceWithSequence?(
+    id: number | string,
+    sequenceNumber: number,
+    invoiceNumber: string,
+    issueDate: Date,
+    taxAuthorityCode?: string
   ): Promise<InvoiceModel>;
   executeReplacementTransaction(
     originalId: number | string,
@@ -45,6 +53,8 @@ export interface IInvoiceCalculationService {
 }
 
 export interface IInvoiceSequenceService {
+  generateDraftCode?(prefix?: string): string;
+  generateTaxAuthorityCode?(zone?: string): string;
   generateInvoiceNumber(zoneOrYear?: string | number): Promise<string>;
 }
 
@@ -113,6 +123,8 @@ export class InvoiceService {
       sellerEmail: invoice.sellerEmail ?? null,
       sellerBankAccount: invoice.sellerBankAccount ?? null,
       taxDepartment: invoice.taxDepartment ?? null,
+      taxAuthorityCode: invoice.taxAuthorityCode ?? null,
+      agreementMinutes: invoice.agreementMinutes ?? null,
       totalAmount: Number(invoice.totalAmount),
       vatAmount: Number(invoice.vatAmount),
       vatRate: Number(invoice.vatRate),
@@ -170,12 +182,14 @@ export class InvoiceService {
 
     const calculatedTotals = this.calculationService.calculateInvoiceTotals(dto.items, dto.vatRate);
     const zone = dto.zone?.trim() || DEFAULT_INVOICE_ZONE;
-    const invoiceNumber = await this.sequenceService.generateInvoiceNumber(zone);
+    const draftInvoiceNumber = this.sequenceService.generateDraftCode
+      ? this.sequenceService.generateDraftCode('NHAP')
+      : `NHAP-${Date.now().toString().slice(-6)}`;
 
     const modelInput: CreateInvoiceModelInput = {
       templateCode: dto.templateCode?.trim() || '01GTKT3/001',
       zone,
-      invoiceNumber,
+      invoiceNumber: draftInvoiceNumber,
       status: InvoiceStatus.DRAFT,
       customerName: dto.customerName.trim(),
       customerTaxCode: dto.customerTaxCode.trim(),
@@ -368,7 +382,9 @@ export class InvoiceService {
     }
 
     const zone = source.zone || DEFAULT_INVOICE_ZONE;
-    const newInvoiceNumber = await this.sequenceService.generateInvoiceNumber(zone);
+    const draftInvoiceNumber = this.sequenceService.generateDraftCode
+      ? this.sequenceService.generateDraftCode('NHAP')
+      : `NHAP-${Date.now().toString().slice(-6)}`;
     const clonedItems = source.items.map((item) => ({
       description: item.description,
       unit: item.unit,
@@ -381,7 +397,7 @@ export class InvoiceService {
     const modelInput: CreateInvoiceModelInput = {
       templateCode: source.templateCode || '01GTKT3/001',
       zone,
-      invoiceNumber: newInvoiceNumber,
+      invoiceNumber: draftInvoiceNumber,
       status: InvoiceStatus.DRAFT,
       customerName: source.customerName,
       customerTaxCode: source.customerTaxCode,
@@ -411,7 +427,7 @@ export class InvoiceService {
 
   /**
    * Workflow: issueInvoice
-   * Orchestrates invoice issue transition, sets issueDate = now(), and manages PDF cache
+   * Orchestrates invoice issue transition, allocates official sequence number, sets issueDate = now(), and manages PDF cache
    */
   async issueInvoice(id: string | number): Promise<InvoiceResponseDTO> {
     const parsedId = this.parseId(id);
@@ -428,10 +444,36 @@ export class InvoiceService {
     }
 
     const issueDate = new Date();
-    const issued = await this.invoiceRepo.updateInvoiceStatus(parsedId, InvoiceStatus.ISSUED, issueDate);
+    const zone = existing.zone || DEFAULT_INVOICE_ZONE;
+
+    // Allocate official sequential invoice number and Tax Authority Code at the moment of issuance
+    const officialInvoiceNumber = await this.sequenceService.generateInvoiceNumber(zone);
+    const seqMatch = officialInvoiceNumber.match(/\d+$/);
+    const sequenceNumber = seqMatch ? parseInt(seqMatch[0], 10) : undefined;
+    const taxAuthorityCode = this.sequenceService.generateTaxAuthorityCode
+      ? this.sequenceService.generateTaxAuthorityCode(zone)
+      : `00E${zone.replace(/^1C/, '')}${Math.random().toString(16).substring(2, 10).toUpperCase()}`;
+
+    let issued: InvoiceModel;
+    if (this.invoiceRepo.issueInvoiceWithSequence && sequenceNumber !== undefined) {
+      issued = await this.invoiceRepo.issueInvoiceWithSequence(
+        parsedId,
+        sequenceNumber,
+        officialInvoiceNumber,
+        issueDate,
+        taxAuthorityCode
+      );
+    } else {
+      issued = await this.invoiceRepo.updateInvoiceStatus(
+        parsedId,
+        InvoiceStatus.ISSUED,
+        issueDate
+      );
+    }
 
     if (this.pdfService) {
       await this.pdfService.invalidatePdfCache(existing.invoiceNumber);
+      await this.pdfService.invalidatePdfCache(officialInvoiceNumber);
     }
 
     return this.mapToResponseDTO(issued);
@@ -439,7 +481,7 @@ export class InvoiceService {
 
   /**
    * Workflow: cancelInvoice
-   * Orchestrates transition of ISSUED invoice to CANCELED with audit reason
+   * Orchestrates transition of ISSUED invoice to CANCELED with audit reason & agreement minutes
    */
   async cancelInvoice(id: string | number, dto: CancelInvoiceDTO): Promise<InvoiceResponseDTO> {
     const parsedId = this.parseId(id);
@@ -459,7 +501,9 @@ export class InvoiceService {
       parsedId,
       InvoiceStatus.CANCELED,
       undefined,
-      dto.cancelReason.trim()
+      dto.cancelReason.trim(),
+      undefined,
+      dto.agreementMinutes ? dto.agreementMinutes.trim() : undefined
     );
 
     if (this.pdfService) {
@@ -496,6 +540,9 @@ export class InvoiceService {
     const calculatedTotals = this.calculationService.calculateInvoiceTotals(dto.items, dto.vatRate);
     const zone = original.zone || DEFAULT_INVOICE_ZONE;
     const replacementInvoiceNumber = await this.sequenceService.generateInvoiceNumber(zone);
+    const replacementTaxAuthorityCode = this.sequenceService.generateTaxAuthorityCode
+      ? this.sequenceService.generateTaxAuthorityCode(zone)
+      : `00E${zone.replace(/^1C/, '')}${Math.random().toString(16).substring(2, 10).toUpperCase()}`;
 
     const newInvoiceData: CreateInvoiceModelInput = {
       templateCode: dto.templateCode || original.templateCode || '01GTKT3/001',
@@ -516,6 +563,8 @@ export class InvoiceService {
       sellerEmail: dto.sellerEmail || original.sellerEmail,
       sellerBankAccount: dto.sellerBankAccount || original.sellerBankAccount,
       taxDepartment: dto.taxDepartment || original.taxDepartment,
+      taxAuthorityCode: replacementTaxAuthorityCode,
+      agreementMinutes: dto.agreementMinutes ? dto.agreementMinutes.trim() : undefined,
       totalAmount: calculatedTotals.totalAmount,
       vatAmount: calculatedTotals.vatAmount,
       vatRate: dto.vatRate,

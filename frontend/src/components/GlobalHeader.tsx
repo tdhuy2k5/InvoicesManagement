@@ -1,7 +1,7 @@
 import React from 'react';
 import { useInvoice } from '../context/InvoiceContext';
 
-export interface GlobalHeaderIslandProps {
+export interface GlobalHeaderProps {
   appName?: string;
   activeNav?: string;
   onNavigateToInvoiceList?: () => void;
@@ -9,14 +9,13 @@ export interface GlobalHeaderIslandProps {
 }
 
 /**
- * GlobalHeaderIsland
+ * GlobalHeader
  * UI Component representing the application-wide top header bar.
- * Matches graph-master.cypher node: `:SharedIsland { id: "GlobalHeaderIsland" }`
  * Outbound Navigation:
  * - `navigateToInvoiceList` -> `InvoiceList`
  * - `navigateToCreateInvoice` -> `InvoiceCreate`
  */
-export const GlobalHeaderIsland: React.FC<GlobalHeaderIslandProps> = ({
+export const GlobalHeader: React.FC<GlobalHeaderProps> = ({
   appName = 'AuditorPro',
   activeNav = 'invoices',
   onNavigateToInvoiceList,
@@ -71,4 +70,4 @@ export const GlobalHeaderIsland: React.FC<GlobalHeaderIslandProps> = ({
   );
 };
 
-export default GlobalHeaderIsland;
+export default GlobalHeader;

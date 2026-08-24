@@ -10,7 +10,7 @@ export interface InvoicePdfItem {
   amount: number;
 }
 
-export interface InvoicePdfViewerIslandProps {
+export interface InvoicePdfViewerProps {
   invoiceId?: string;
   invoiceNumber?: string;
   serialNumber?: string;
@@ -42,15 +42,14 @@ export interface InvoicePdfViewerIslandProps {
 export { useInvoicePdf };
 
 /**
- * InvoicePdfViewerIsland
+ * InvoicePdfViewer
  * Live sticky A4 Electronic Invoice PDF Document Preview & Interactive Toolbar.
- * Matches graph-master.cypher: `:SharedIsland { id: "InvoicePdfViewerIsland" }`
  * Mounted on: `InvoiceDetail` (`/invoices/:id`)
  * State Mutations:
  * - `previewPdfStream` (executes: getInvoicePdfStream)
  * - `downloadPdfFile` (executes: getInvoicePdfStream)
  */
-export const InvoicePdfViewerIsland: React.FC<InvoicePdfViewerIslandProps> = ({
+export const InvoicePdfViewer: React.FC<InvoicePdfViewerProps> = ({
   invoiceId,
   invoiceNumber = 'HD-2026-00042',
   serialNumber = '1C26TAA',
@@ -297,4 +296,4 @@ export const InvoicePdfViewerIsland: React.FC<InvoicePdfViewerIslandProps> = ({
   );
 };
 
-export default InvoicePdfViewerIsland;
+export default InvoicePdfViewer;

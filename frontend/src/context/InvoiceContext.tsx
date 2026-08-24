@@ -249,7 +249,7 @@ export const InvoiceProvider: React.FC<{ children: React.ReactNode }> = ({ child
       const res = await invoiceApi.cancelInvoice(id, cancelReason);
       const updated = res.data;
       setInvoices((prev) => prev.map((inv) => (String(inv.id) === String(id) ? updated : inv)));
-      showToast('warning', 'Đã Hủy Hóa Đơn', `Hóa đơn ${updated.invoiceNumber} đã chuyển sang trạng thái ĐÃ HỦY.`);
+      showToast('warning', 'Đã Hủy Hóa Đơn', `Hóa đơn ${updated.invoiceNumber} đã chuyển sang trạng thái CANCELED.`);
       return updated;
     } catch (err: any) {
       showToast('error', 'Lỗi Hủy Hóa Đơn', err?.message || 'Không thể hủy hóa đơn.');

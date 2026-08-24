@@ -1,13 +1,13 @@
 import { useCallback } from 'react';
 import { StateMachineGuard } from '@backend/services/StateMachineGuard';
 import { useInvoice } from '../context/InvoiceContext';
-import { InvoiceStatus } from '../components/InvoiceHeaderDetailIsland';
+import { InvoiceStatus } from '../components/InvoiceHeaderDetail';
 
 const stateGuard = new StateMachineGuard();
 
 /**
  * Custom Hook: useInvoiceDetailActions
- * Thin wiring adapter connecting InvoiceHeaderDetailIsland to Backend Core StateMachineGuard & InvoiceService workflows
+ * Thin wiring adapter connecting InvoiceHeaderDetail to Backend Core StateMachineGuard & InvoiceService workflows
  * Workflows:
  * - cloneInvoiceFromDetail (InvoiceService.cloneInvoice)
  * - openIssueModal (StateMachineGuard.validateIssueTransition)
@@ -26,10 +26,10 @@ export function useInvoiceDetailActions(invoice?: {
 }) {
   const { cloneInvoice, navigate, showToast } = useInvoice();
 
-  const handleClone = useCallback(() => {
+  const handleClone = useCallback(async () => {
     if (!invoice?.id) return;
     try {
-      const cloned = cloneInvoice(invoice.id);
+      const cloned = await cloneInvoice(invoice.id);
       navigate('/invoices/:id', { id: cloned.id });
       return cloned;
     } catch (err: any) {

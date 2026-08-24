@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { InvoiceCalculationService } from '@backend/services/InvoiceCalculationService';
 import { convertVndToWords } from '@backend/services/CurrencyToWordsUtil';
-import { FormInvoiceItem } from '../components/InvoiceFormIsland';
+import { FormInvoiceItem } from '../components/InvoiceForm';
 
 const calculationService = new InvoiceCalculationService();
 

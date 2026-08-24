@@ -1,7 +1,7 @@
 import React from 'react';
 import { useCurrencyToWords, convertVndToWords } from '../hooks/useCurrencyToWords';
 
-export interface InvoiceSummaryIslandProps {
+export interface InvoiceSummaryProps {
   subtotalAmount?: number;
   vatRate?: number;
   vatAmount?: number;
@@ -14,14 +14,13 @@ export interface InvoiceSummaryIslandProps {
 export { convertVndToWords };
 
 /**
- * InvoiceSummaryIsland
+ * InvoiceSummary
  * Financial Summary card (Subtotal, VAT, Grand Total, and Amount in Vietnamese Words).
- * Matches graph-master.cypher: `:SharedIsland { id: "InvoiceSummaryIsland" }`
  * Mounted on: `InvoiceDetail` (`/invoices/:id`)
  * State Mutations:
  * - `renderVietnameseCurrencyWords` (executes: convertVndToWords)
  */
-export const InvoiceSummaryIsland: React.FC<InvoiceSummaryIslandProps> = ({
+export const InvoiceSummary: React.FC<InvoiceSummaryProps> = ({
   subtotalAmount = 25000000,
   vatRate = 10,
   vatAmount = 2500000,
@@ -72,4 +71,4 @@ export const InvoiceSummaryIsland: React.FC<InvoiceSummaryIslandProps> = ({
   );
 };
 
-export default InvoiceSummaryIsland;
+export default InvoiceSummary;

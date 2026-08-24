@@ -23,6 +23,27 @@ export class InvoiceSequenceService {
   }
 
   /**
+   * Generates a temporary unique identifier for DRAFT invoices (e.g. NHAP-A8F2K)
+   * This does NOT consume the official PostgreSQL sequence counter.
+   */
+  generateDraftCode(prefix: string = 'NHAP'): string {
+    const randomSuffix = Math.random().toString(36).substring(2, 7).toUpperCase();
+    const timestampPart = Date.now().toString().slice(-4);
+    return `${prefix}-${randomSuffix}${timestampPart}`;
+  }
+
+  /**
+   * Generates a realistic Tax Authority Code (Mã Cơ Quan Thuế - Mã CQT)
+   * Format: 00E<Year><SerialZone><RandomHexHash> (e.g. 00E26TAA9F8B2C41)
+   */
+  generateTaxAuthorityCode(zone: string = '1C26TAA'): string {
+    const cleanZone = zone.replace(/^1C/, '').replace(/[^A-Z0-9]/gi, '').toUpperCase() || '26TAA';
+    const randomHash = Math.random().toString(16).substring(2, 10).toUpperCase();
+    const timeHash = Date.now().toString(16).slice(-4).toUpperCase();
+    return `00E${cleanZone}${randomHash}${timeHash}`;
+  }
+
+  /**
    * Formats sequence number and zone into standardized invoice number: <zone>-<NNNNN>
    * Default zone is 'HD-2026' matching schema.prisma default for model Invoice.zone
    */
@@ -52,9 +73,16 @@ export class InvoiceSequenceService {
     }
 
     try {
-      // Execute raw SQL to fetch PostgreSQL sequence value from Invoice.sequenceNumber autoincrement sequence
+      // Ensure PostgreSQL sequence exists
+      if (this.prismaClient?.$executeRaw) {
+        await this.prismaClient.$executeRaw`
+          CREATE SEQUENCE IF NOT EXISTS "Invoice_sequenceNumber_seq"
+        `;
+      }
+
+      // Execute raw SQL to fetch PostgreSQL sequence value
       const result: Array<{ next_val: bigint | number | string }> = await this.prismaClient.$queryRaw`
-        SELECT nextval(COALESCE(pg_get_serial_sequence('"Invoice"', 'sequenceNumber'), '"Invoice_sequenceNumber_seq"')) AS next_val
+        SELECT nextval('\"Invoice_sequenceNumber_seq\"') AS next_val
       `;
 
       if (!result || result.length === 0 || result[0].next_val === undefined || result[0].next_val === null) {

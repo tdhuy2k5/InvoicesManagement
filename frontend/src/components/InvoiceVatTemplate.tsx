@@ -1,6 +1,6 @@
 import React from 'react';
 import { InvoiceItem } from '../mockData';
-import { convertVndToWords } from './InvoiceSummaryIsland';
+import { convertVndToWords } from './InvoiceSummary';
 
 export interface InvoiceVatTemplateProps {
   templateCode?: string;
@@ -42,6 +42,7 @@ export interface InvoiceVatTemplateProps {
   signedAt?: string;
   originalInvoiceId?: string | null;
   cancelReason?: string | null;
+  taxAuthorityCode?: string | null;
   status?: string;
 
   className?: string;
@@ -83,11 +84,11 @@ export const TaxCodeBoxes: React.FC<{ taxCode?: string }> = ({ taxCode = '' }) =
 };
 
 /**
- * InvoiceVatTemplateIsland
+ * InvoiceVatTemplate
  * Chuẩn biểu mẫu Hóa đơn Giá trị gia tăng (Mẫu 01GTKT3/001 theo quy định Thuế Việt Nam)
  * Hỗ trợ Watermark phân biệt rõ ràng giữa DRAFT (Bản Nháp), ISSUED (Đã ký số) và CANCELED (Đã hủy).
  */
-export const InvoiceVatTemplateIsland: React.FC<InvoiceVatTemplateProps> = ({
+export const InvoiceVatTemplate: React.FC<InvoiceVatTemplateProps> = ({
   templateCode = '01GTKT3/001',
   serialNumber = '1C26TAA',
   invoiceNumber = '0000001',
@@ -116,6 +117,7 @@ export const InvoiceVatTemplateIsland: React.FC<InvoiceVatTemplateProps> = ({
   signerName,
   signedAt,
   originalInvoiceId,
+  taxAuthorityCode,
   status = 'DRAFT',
   className = '',
 }) => {
@@ -184,10 +186,10 @@ export const InvoiceVatTemplateIsland: React.FC<InvoiceVatTemplateProps> = ({
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none z-10 opacity-[0.14] overflow-hidden">
           <div className="transform -rotate-45 text-center border-8 border-dashed border-gray-900 p-8 rounded-3xl">
             <div className="text-5xl sm:text-7xl font-bold uppercase tracking-widest text-gray-900">
-              BẢN NHÁP
+              DRAFT
             </div>
             <div className="text-xl sm:text-2xl font-bold uppercase tracking-wider text-gray-800 mt-2">
-              (DRAFT - CHƯA CÓ GIÁ TRỊ PHÁP LÝ)
+              (BẢN NHÁP - CHƯA CÓ GIÁ TRỊ PHÁP LÝ)
             </div>
           </div>
         </div>
@@ -197,10 +199,10 @@ export const InvoiceVatTemplateIsland: React.FC<InvoiceVatTemplateProps> = ({
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none z-10 opacity-[0.18] overflow-hidden">
           <div className="transform -rotate-45 text-center border-8 border-dashed border-red-700 p-8 rounded-3xl">
             <div className="text-5xl sm:text-7xl font-bold uppercase tracking-widest text-red-700">
-              HÓA ĐƠN ĐÃ HỦY
+              CANCELED
             </div>
             <div className="text-xl sm:text-2xl font-bold uppercase tracking-wider text-red-800 mt-2">
-              (CANCELED INVOICE)
+              (HÓA ĐƠN ĐÃ HỦY)
             </div>
           </div>
         </div>
@@ -221,6 +223,11 @@ export const InvoiceVatTemplateIsland: React.FC<InvoiceVatTemplateProps> = ({
           <div>
             Số: <span className="font-bold font-mono text-red-600 text-sm tracking-wider">{displayNo}</span>
           </div>
+          {taxAuthorityCode && (
+            <div>
+              Mã CQT: <span className="font-bold font-mono text-emerald-700 text-xs tracking-wider">{taxAuthorityCode}</span>
+            </div>
+          )}
         </div>
       </div>
 
@@ -231,7 +238,7 @@ export const InvoiceVatTemplateIsland: React.FC<InvoiceVatTemplateProps> = ({
         </h1>
         <div className="text-xs font-semibold text-gray-700 italic mt-0.5">
           {getCopyTitle()}
-          {isDraft && <span className="text-amber-700 font-bold not-italic ml-2">(BẢN NHÁP - XEM TRƯỚC)</span>}
+          {isDraft && <span className="text-amber-700 font-bold not-italic ml-2">(DRAFT - XEM TRƯỚC)</span>}
         </div>
         <div className="text-xs italic text-gray-800 mt-1">
           Ngày {dayStr} tháng {monthStr} năm {yearStr}
@@ -436,4 +443,4 @@ export const InvoiceVatTemplateIsland: React.FC<InvoiceVatTemplateProps> = ({
   );
 };
 
-export default InvoiceVatTemplateIsland;
+export default InvoiceVatTemplate;

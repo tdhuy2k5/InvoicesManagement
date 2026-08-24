@@ -52,6 +52,8 @@ export class InvoiceRepository implements IInvoiceRepository {
       sellerEmail: record.sellerEmail ?? null,
       sellerBankAccount: record.sellerBankAccount ?? null,
       taxDepartment: record.taxDepartment ?? null,
+      taxAuthorityCode: record.taxAuthorityCode ?? null,
+      agreementMinutes: record.agreementMinutes ?? null,
       totalAmount: Number(record.totalAmount),
       vatAmount: Number(record.vatAmount),
       vatRate: record.vatRate,
@@ -100,6 +102,8 @@ export class InvoiceRepository implements IInvoiceRepository {
         sellerEmail: data.sellerEmail ?? null,
         sellerBankAccount: data.sellerBankAccount ?? null,
         taxDepartment: data.taxDepartment ?? null,
+        taxAuthorityCode: data.taxAuthorityCode ?? null,
+        agreementMinutes: data.agreementMinutes ?? null,
         totalAmount: new Prisma.Decimal(data.totalAmount),
         vatAmount: new Prisma.Decimal(data.vatAmount),
         vatRate: data.vatRate,
@@ -268,7 +272,8 @@ export class InvoiceRepository implements IInvoiceRepository {
     status: InvoiceStatus,
     issueDate?: Date,
     cancelReason?: string,
-    replacedById?: number | string
+    replacedById?: number | string,
+    agreementMinutes?: string
   ): Promise<InvoiceModel> {
     const stringId = this.parseId(id);
 
@@ -288,9 +293,41 @@ export class InvoiceRepository implements IInvoiceRepository {
       updatePayload.replacedById = String(replacedById);
     }
 
+    if (agreementMinutes !== undefined) {
+      updatePayload.agreementMinutes = agreementMinutes;
+    }
+
     const updated = await (this.prisma as any).invoice.update({
       where: { id: stringId },
       data: updatePayload,
+      include: { items: true },
+    });
+
+    return this.toDomainModel(updated);
+  }
+
+  /**
+   * Workflow: issueInvoiceWithSequence
+   * Atomically transitions DRAFT invoice to ISSUED, assigns official sequence & invoice number, CQT code, and issue date
+   */
+  async issueInvoiceWithSequence(
+    id: number | string,
+    sequenceNumber: number,
+    invoiceNumber: string,
+    issueDate: Date,
+    taxAuthorityCode?: string
+  ): Promise<InvoiceModel> {
+    const stringId = this.parseId(id);
+
+    const updated = await (this.prisma as any).invoice.update({
+      where: { id: stringId },
+      data: {
+        status: InvoiceStatus.ISSUED,
+        sequenceNumber,
+        invoiceNumber,
+        issueDate,
+        ...(taxAuthorityCode ? { taxAuthorityCode } : {}),
+      },
       include: { items: true },
     });
 
@@ -330,6 +367,8 @@ export class InvoiceRepository implements IInvoiceRepository {
           sellerEmail: newInvoiceData.sellerEmail ?? null,
           sellerBankAccount: newInvoiceData.sellerBankAccount ?? null,
           taxDepartment: newInvoiceData.taxDepartment ?? null,
+          taxAuthorityCode: newInvoiceData.taxAuthorityCode ?? null,
+          agreementMinutes: newInvoiceData.agreementMinutes ?? null,
           totalAmount: new Prisma.Decimal(newInvoiceData.totalAmount),
           vatAmount: new Prisma.Decimal(newInvoiceData.vatAmount),
           vatRate: newInvoiceData.vatRate,
@@ -355,6 +394,7 @@ export class InvoiceRepository implements IInvoiceRepository {
         data: {
           status: InvoiceStatus.REPLACED,
           replacedById: replacementRecord.id,
+          ...(newInvoiceData.agreementMinutes ? { agreementMinutes: newInvoiceData.agreementMinutes } : {}),
         },
         include: { items: true },
       });

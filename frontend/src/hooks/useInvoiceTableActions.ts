@@ -1,13 +1,13 @@
 import { useCallback } from 'react';
 import { StateMachineGuard } from '@backend/services/StateMachineGuard';
 import { useInvoice } from '../context/InvoiceContext';
-import { InvoiceRowItem } from '../components/InvoiceTableIsland';
+import { InvoiceRowItem } from '../components/InvoiceTable';
 
 const stateGuard = new StateMachineGuard();
 
 /**
  * Custom Hook: useInvoiceTableActions
- * Thin wiring adapter connecting InvoiceTableIsland directly to Backend Core functions & StateMachineGuard
+ * Thin wiring adapter connecting InvoiceTable directly to Backend Core functions & StateMachineGuard
  * Workflows:
  * - cloneInvoiceFromList (InvoiceService.cloneInvoice)
  * - openDeleteModal (StateMachineGuard.validateDraftModification)

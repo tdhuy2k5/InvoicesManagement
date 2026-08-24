@@ -2,22 +2,22 @@ import React, { useState, useMemo } from 'react';
 import { useInvoice } from '../context/InvoiceContext';
 import { useInvoiceFilter } from '../hooks/useInvoiceFilter';
 import { useInvoiceTableActions } from '../hooks/useInvoiceTableActions';
-import { GlobalHeaderIsland } from '../components/GlobalHeaderIsland';
-import { InvoiceFilterIsland } from '../components/InvoiceFilterIsland';
-import { InvoiceTableIsland, InvoiceRowItem } from '../components/InvoiceTableIsland';
-import { InvoiceDeleteModalIsland } from '../components/InvoiceDeleteModalIsland';
-import { InvoiceCancelModalIsland } from '../components/InvoiceCancelModalIsland';
+import { GlobalHeader } from '../components/GlobalHeader';
+import { InvoiceFilter } from '../components/InvoiceFilter';
+import { InvoiceTable, InvoiceRowItem } from '../components/InvoiceTable';
+import { InvoiceDeleteModal } from '../components/InvoiceDeleteModal';
+import { InvoiceCancelModal } from '../components/InvoiceCancelModal';
 import { InvoiceEntity } from '../mockData';
 
 /**
  * InvoiceListPage (`InvoiceList`)
  * Route: `/invoices` (and default `/`)
  * Assembled from:
- * - GlobalHeaderIsland
- * - InvoiceFilterIsland
- * - InvoiceTableIsland
- * - InvoiceDeleteModalIsland
- * - InvoiceCancelModalIsland
+ * - GlobalHeader
+ * - InvoiceFilter
+ * - InvoiceTable
+ * - InvoiceDeleteModal
+ * - InvoiceCancelModal
  * Plus Executive Metrics Cards and Status Controls.
  * 
  * Wired with Backend Core:
@@ -124,6 +124,7 @@ export const InvoiceListPage: React.FC = () => {
       status: inv.status,
       originalInvoiceId: inv.originalInvoiceId,
       replacedById: inv.replacedById,
+      taxAuthorityCode: inv.taxAuthorityCode,
     }));
   }, [paginatedInvoices]);
 
@@ -161,8 +162,8 @@ export const InvoiceListPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background text-on-surface flex flex-col font-sans">
-      {/* Global Header Island */}
-      <GlobalHeaderIsland
+      {/* Global Header */}
+      <GlobalHeader
         appName="AuditorPro Hóa Đơn"
         activeNav="invoices"
         onNavigateToInvoiceList={() => navigate('/invoices')}
@@ -181,8 +182,8 @@ export const InvoiceListPage: React.FC = () => {
 
         {/* Data Filter & Table Container */}
         <div className="bg-surface border border-outline-variant rounded-xl shadow-sm overflow-hidden flex flex-col">
-          {/* InvoiceFilterIsland */}
-          <InvoiceFilterIsland
+          {/* InvoiceFilter */}
+          <InvoiceFilter
             currentStatus={currentStatus}
             searchTerm={searchTerm}
             vatRateFilter={vatRateFilter}
@@ -250,8 +251,8 @@ export const InvoiceListPage: React.FC = () => {
             }}
           />
 
-          {/* InvoiceTableIsland */}
-          <InvoiceTableIsland
+          {/* InvoiceTable */}
+          <InvoiceTable
             invoices={tableRows}
             selectedId={selectedInvoice?.id || null}
             currentPage={currentPage}
@@ -284,8 +285,8 @@ export const InvoiceListPage: React.FC = () => {
         </div>
       </main>
 
-      {/* Delete Draft Modal Island */}
-      <InvoiceDeleteModalIsland
+      {/* Delete Draft Modal */}
+      <InvoiceDeleteModal
         isOpen={deleteModalOpen}
         invoiceId={targetDeleteInvoice?.id}
         invoiceNumber={targetDeleteInvoice?.invoiceNumber}
@@ -300,8 +301,8 @@ export const InvoiceListPage: React.FC = () => {
         onConfirm={handleConfirmDelete}
       />
 
-      {/* Cancel Issued Invoice Modal Island */}
-      <InvoiceCancelModalIsland
+      {/* Cancel Issued Invoice Modal */}
+      <InvoiceCancelModal
         isOpen={cancelModalOpen}
         invoiceId={targetCancelInvoice?.id}
         invoiceNumber={targetCancelInvoice?.invoiceNumber}

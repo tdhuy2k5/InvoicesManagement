@@ -16,10 +16,11 @@ export interface CustomerDetails {
   customerPhone?: string;
   customerEmail?: string;
   customerRepresentative?: string;
+  customerBankAccount?: string;
   paymentMethod?: string;
 }
 
-export interface InvoicePartyInfoIslandProps {
+export interface InvoicePartyInfoProps {
   // Support nested objects
   seller?: SellerDetails;
   customer?: CustomerDetails;
@@ -38,18 +39,18 @@ export interface InvoicePartyInfoIslandProps {
   customerPhone?: string;
   customerEmail?: string;
   customerRepresentative?: string;
+  customerBankAccount?: string;
   paymentMethod?: string;
 
   className?: string;
 }
 
 /**
- * InvoicePartyInfoIsland
+ * InvoicePartyInfo
  * Seller (Bên Bán) and Buyer (Bên Mua) legal business profile cards.
- * Matches graph-master.cypher: `:SharedIsland { id: "InvoicePartyInfoIsland" }`
  * Mounted on: `InvoiceDetail` (`/invoices/:id`)
  */
-export const InvoicePartyInfoIsland: React.FC<InvoicePartyInfoIslandProps> = ({
+export const InvoicePartyInfo: React.FC<InvoicePartyInfoProps> = ({
   seller,
   customer,
   sellerName = seller?.sellerName || 'CÔNG TY CỔ PHẦN CÔNG NGHỆ VÀ TRUYỀN THÔNG ALPHA',
@@ -64,6 +65,7 @@ export const InvoicePartyInfoIsland: React.FC<InvoicePartyInfoIslandProps> = ({
   customerPhone = customer?.customerPhone || '',
   customerEmail = customer?.customerEmail || 'contact@globalsolutions.vn',
   customerRepresentative = customer?.customerRepresentative || 'Trần Thị Bích Ngọc',
+  customerBankAccount = customer?.customerBankAccount || '',
   paymentMethod = customer?.paymentMethod || 'Chuyển khoản (TM/CK)',
   className = '',
 }) => {
@@ -130,6 +132,12 @@ export const InvoicePartyInfoIsland: React.FC<InvoicePartyInfoIslandProps> = ({
               </span>
             </div>
           )}
+          {customerBankAccount && (
+            <div className="grid grid-cols-[80px_1fr] gap-2">
+              <span className="text-on-surface-variant">STK:</span>
+              <span className="text-primary font-tabular-nums">{customerBankAccount}</span>
+            </div>
+          )}
           <div className="grid grid-cols-[80px_1fr] gap-2">
             <span className="text-on-surface-variant">HTTT:</span>
             <span className="text-primary">{paymentMethod}</span>
@@ -140,4 +148,4 @@ export const InvoicePartyInfoIsland: React.FC<InvoicePartyInfoIslandProps> = ({
   );
 };
 
-export default InvoicePartyInfoIsland;
+export default InvoicePartyInfo;

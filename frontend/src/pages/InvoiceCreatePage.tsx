@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { useInvoice } from '../context/InvoiceContext';
-import { GlobalHeaderIsland } from '../components/GlobalHeaderIsland';
-import { InvoiceFormIsland, InvoiceFormData } from '../components/InvoiceFormIsland';
+import { GlobalHeader } from '../components/GlobalHeader';
+import { InvoiceForm, InvoiceFormData } from '../components/InvoiceForm';
 
 /**
  * InvoiceCreatePage (`InvoiceCreate`)
  * Route: `/invoices/new`
  * Assembled from:
- * - GlobalHeaderIsland
- * - InvoiceFormIsland (mode="CREATE")
+ * - GlobalHeader
+ * - InvoiceForm (mode="CREATE")
  */
 export const InvoiceCreatePage: React.FC = () => {
   const { navigate, createDraftInvoice } = useInvoice();
@@ -62,8 +62,8 @@ export const InvoiceCreatePage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background text-on-surface flex flex-col font-sans">
-      {/* Global Header Island */}
-      <GlobalHeaderIsland
+      {/* Global Header */}
+      <GlobalHeader
         appName="AuditorPro Hóa Đơn"
         activeNav="invoices"
         onNavigateToInvoiceList={() => navigate('/invoices')}
@@ -90,17 +90,17 @@ export const InvoiceCreatePage: React.FC = () => {
               <h1 className="font-headline-lg text-xl sm:text-2xl font-bold text-primary">
                 Lập Hóa Đơn Mới (Tạo Bản Nháp)
               </h1>
-              <span className="bg-blue-50 text-blue-700 border border-blue-200 px-2.5 py-0.5 rounded text-xs font-semibold">
-                BẢN NHÁP
+              <span className="bg-blue-50 text-blue-700 border border-blue-200 px-2.5 py-0.5 rounded text-xs font-semibold font-mono">
+                DRAFT
               </span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Main Form Island */}
+      {/* Main Form */}
       <main className="flex-1 w-full max-w-[1440px] mx-auto overflow-hidden">
-        <InvoiceFormIsland
+        <InvoiceForm
           mode="CREATE"
           isSubmitting={isSubmitting}
           validationError={validationError}

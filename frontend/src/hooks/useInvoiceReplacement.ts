@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { StateMachineGuard } from '@backend/services/StateMachineGuard';
 import { useInvoice } from '../context/InvoiceContext';
-import { InvoiceFormData } from '../components/InvoiceFormIsland';
+import { InvoiceFormData } from '../components/InvoiceForm';
 import { InvoiceEntity } from '../mockData';
 
 const stateGuard = new StateMachineGuard();

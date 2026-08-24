@@ -91,7 +91,7 @@ export class PdfService implements IPdfService {
 
   /**
    * Render HTML invoice template for Vietnamese A4 printing
-   * 100% synchronized with frontend InvoiceVatTemplateIsland.tsx
+   * 100% synchronized with frontend InvoiceVatTemplate.tsx
    */
   renderInvoiceHtml(invoice: InvoiceModel, amountInWords: string): string {
     const activeDate = invoice.issueDate ? new Date(invoice.issueDate) : (invoice.createdAt ? new Date(invoice.createdAt) : new Date());
@@ -394,6 +394,7 @@ export class PdfService implements IPdfService {
       <div>Mẫu số: <strong style="font-family: monospace;">${invoice.templateCode || '01GTKT3/001'}</strong></div>
       <div>Ký hiệu: <strong style="font-family: monospace;">${invoice.zone || '1C26TAA'}</strong></div>
       <div>Số: <strong style="color: #dc2626; font-size: 14px; font-family: monospace; letter-spacing: 0.5px;">${displayNo}</strong></div>
+      ${invoice.taxAuthorityCode ? `<div>Mã CQT: <strong style="color: #047857; font-size: 11px; font-family: monospace; letter-spacing: 0.5px;">${invoice.taxAuthorityCode}</strong></div>` : ''}
     </div>
   </div>
 

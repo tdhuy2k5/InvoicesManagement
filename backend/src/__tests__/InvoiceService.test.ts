@@ -72,6 +72,7 @@ describe('InvoiceService (Unit Tests with Mocks)', () => {
     };
 
     sequenceService = {
+      generateDraftCode: vi.fn().mockReturnValue('NHAP-12345'),
       generateInvoiceNumber: vi.fn().mockResolvedValue('HD-2026-00001'),
     };
 
@@ -96,7 +97,7 @@ describe('InvoiceService (Unit Tests with Mocks)', () => {
   });
 
   describe('createDraftInvoice', () => {
-    it('should create a draft invoice with calculated totals and generated sequence', async () => {
+    it('should create a draft invoice with draft code and not consume sequence', async () => {
       const dto = {
         customerName: 'Công ty TNHH ABC',
         customerTaxCode: '0101234567',
@@ -113,7 +114,7 @@ describe('InvoiceService (Unit Tests with Mocks)', () => {
       const result = await service.createDraftInvoice(dto);
 
       expect(calculationService.calculateInvoiceTotals).toHaveBeenCalledWith(dto.items, 10);
-      expect(sequenceService.generateInvoiceNumber).toHaveBeenCalled();
+      expect(sequenceService.generateDraftCode).toHaveBeenCalled();
       expect(invoiceRepo.createInvoice).toHaveBeenCalled();
       expect(result.id).toBe('uuid-1234');
       expect(result.status).toBe(InvoiceStatus.DRAFT);
@@ -138,12 +139,12 @@ describe('InvoiceService (Unit Tests with Mocks)', () => {
   });
 
   describe('issueInvoice', () => {
-    it('should validate transition and update status to ISSUED', async () => {
+    it('should validate transition, allocate official sequence, and update status to ISSUED', async () => {
       const result = await service.issueInvoice('uuid-1234');
 
       expect(invoiceRepo.findInvoiceById).toHaveBeenCalledWith('uuid-1234');
       expect(stateMachineGuard.validateIssueTransition).toHaveBeenCalledWith(InvoiceStatus.DRAFT);
-      expect(invoiceRepo.updateInvoiceStatus).toHaveBeenCalled();
+      expect(sequenceService.generateInvoiceNumber).toHaveBeenCalled();
       expect(result.status).toBe(InvoiceStatus.ISSUED);
     });
 

@@ -1,7 +1,8 @@
 import React from 'react';
 import { useInvoiceTableActions } from '../hooks/useInvoiceTableActions';
+import { InvoiceStatus } from './InvoiceHeaderDetail';
 
-export type InvoiceStatus = 'DRAFT' | 'ISSUED' | 'REPLACED' | 'CANCELED';
+export type { InvoiceStatus };
 
 export interface InvoiceRowItem {
   id: string;
@@ -19,9 +20,10 @@ export interface InvoiceRowItem {
   status: InvoiceStatus;
   originalInvoiceId?: string | null;
   replacedById?: string | null;
+  taxAuthorityCode?: string | null;
 }
 
-export interface InvoiceTableIslandProps {
+export interface InvoiceTableProps {
   invoices?: InvoiceRowItem[];
   selectedId?: string | null;
   isLoading?: boolean;
@@ -43,10 +45,10 @@ export interface InvoiceTableIslandProps {
 export { useInvoiceTableActions };
 
 /**
- * InvoiceTableIsland
- * Interactive Data Table & Pagination Island displaying full Seller & Buyer details.
+ * InvoiceTable
+ * Interactive Data Table & Pagination displaying full Seller & Buyer details.
  */
-export const InvoiceTableIsland: React.FC<InvoiceTableIslandProps> = ({
+export const InvoiceTable: React.FC<InvoiceTableProps> = ({
   invoices = [],
   selectedId = null,
   isLoading = false,
@@ -86,30 +88,30 @@ export const InvoiceTableIsland: React.FC<InvoiceTableIslandProps> = ({
     switch (status) {
       case 'DRAFT':
         return (
-          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
-            Bản nháp
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold font-mono bg-blue-50 text-blue-700 border border-blue-200">
+            DRAFT
           </span>
         );
       case 'ISSUED':
         return (
-          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-            Đã phát hành
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold font-mono bg-emerald-50 text-emerald-700 border border-emerald-200">
+            ISSUED
           </span>
         );
       case 'REPLACED':
         return (
-          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
-            Đã thay thế
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold font-mono bg-amber-50 text-amber-700 border border-amber-200">
+            REPLACED
           </span>
         );
       case 'CANCELED':
         return (
-          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">
-            Đã hủy
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold font-mono bg-rose-50 text-rose-700 border border-rose-200">
+            CANCELED
           </span>
         );
       default:
-        return <span className="text-xs text-on-surface-variant">{status}</span>;
+        return <span className="text-xs text-on-surface-variant font-mono">{status}</span>;
     }
   };
 
@@ -170,14 +172,20 @@ export const InvoiceTableIsland: React.FC<InvoiceTableIslandProps> = ({
                       className={`py-3 px-4 font-medium ${
                         isStrikethrough
                           ? 'text-on-surface-variant line-through'
-                          : 'text-primary hover:underline font-mono font-semibold'
+                          : 'text-primary font-mono font-semibold'
                       }`}
                       onClick={(e) => {
                         e.stopPropagation();
                         onViewDetail?.(inv.id);
                       }}
                     >
-                      {inv.invoiceNumber}
+                      <div className="hover:underline cursor-pointer">{inv.invoiceNumber}</div>
+                      {inv.taxAuthorityCode && (
+                        <div className="text-[10px] text-emerald-700 dark:text-emerald-400 font-normal font-mono flex items-center gap-0.5 mt-0.5 no-underline">
+                          <span className="material-symbols-outlined text-[12px]">account_balance</span>
+                          <span>{inv.taxAuthorityCode}</span>
+                        </div>
+                      )}
                     </td>
                     <td className="py-3 px-4 text-on-surface-variant text-xs font-mono">
                       {formatDate(inv.issueDate || inv.createdAt)}
@@ -277,4 +285,4 @@ export const InvoiceTableIsland: React.FC<InvoiceTableIslandProps> = ({
   );
 };
 
-export default InvoiceTableIsland;
+export default InvoiceTable;

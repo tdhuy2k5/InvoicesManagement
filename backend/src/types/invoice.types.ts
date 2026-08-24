@@ -46,6 +46,8 @@ export interface InvoiceModel {
   sellerEmail?: string | null;
   sellerBankAccount?: string | null;
   taxDepartment?: string | null;
+  taxAuthorityCode?: string | null;
+  agreementMinutes?: string | null;
   totalAmount: number;
   vatAmount: number;
   vatRate: number;
@@ -111,9 +113,12 @@ export interface UpdateInvoiceDTO {
 
 export interface CancelInvoiceDTO {
   cancelReason?: string;
+  agreementMinutes?: string;
 }
 
-export interface ReplaceInvoiceDTO extends CreateInvoiceDTO {}
+export interface ReplaceInvoiceDTO extends CreateInvoiceDTO {
+  agreementMinutes?: string;
+}
 
 export interface GetInvoicesQueryDTO {
   status?: string;
@@ -158,6 +163,8 @@ export interface InvoiceResponseDTO {
   sellerEmail?: string | null;
   sellerBankAccount?: string | null;
   taxDepartment?: string | null;
+  taxAuthorityCode?: string | null;
+  agreementMinutes?: string | null;
   totalAmount: number;
   vatAmount: number;
   vatRate: number;
@@ -223,6 +230,8 @@ export interface CreateInvoiceModelInput {
   sellerEmail?: string | null;
   sellerBankAccount?: string | null;
   taxDepartment?: string | null;
+  taxAuthorityCode?: string | null;
+  agreementMinutes?: string | null;
   totalAmount: number;
   vatAmount: number;
   vatRate: number;

@@ -1,17 +1,17 @@
 import React from 'react';
 import { useInvoice } from '../context/InvoiceContext';
 import { useInvoiceReplacement } from '../hooks/useInvoiceReplacement';
-import { GlobalHeaderIsland } from '../components/GlobalHeaderIsland';
-import { InvoiceReplacementBannerIsland } from '../components/InvoiceReplacementBannerIsland';
-import { InvoiceFormIsland } from '../components/InvoiceFormIsland';
+import { GlobalHeader } from '../components/GlobalHeader';
+import { InvoiceReplacementBanner } from '../components/InvoiceReplacementBanner';
+import { InvoiceForm } from '../components/InvoiceForm';
 
 /**
  * InvoiceReplacePage (`InvoiceReplace`)
  * Route: `/invoices/:id/replace`
  * Assembled from:
- * - GlobalHeaderIsland
- * - InvoiceReplacementBannerIsland
- * - InvoiceFormIsland (mode="REPLACE")
+ * - GlobalHeader
+ * - InvoiceReplacementBanner
+ * - InvoiceForm (mode="REPLACE")
  * 
  * Enforces Visibility & Transition Guard:
  * `invoice.status == "ISSUED" && invoice.originalInvoiceId == null`
@@ -38,7 +38,7 @@ export const InvoiceReplacePage: React.FC = () => {
   if (!originalInvoice) {
     return (
       <div className="min-h-screen bg-background text-on-surface flex flex-col font-sans">
-        <GlobalHeaderIsland
+        <GlobalHeader
           appName="AuditorPro Hóa Đơn"
           activeNav="invoices"
           onNavigateToInvoiceList={() => navigate('/invoices')}
@@ -69,7 +69,7 @@ export const InvoiceReplacePage: React.FC = () => {
     const isDepthCapExceeded = validationState.reason === 'DEPTH_CAP_EXCEEDED';
     return (
       <div className="min-h-screen bg-background text-on-surface flex flex-col font-sans">
-        <GlobalHeaderIsland
+        <GlobalHeader
           appName="AuditorPro Hóa Đơn"
           activeNav="invoices"
           onNavigateToInvoiceList={() => navigate('/invoices')}
@@ -122,8 +122,8 @@ export const InvoiceReplacePage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background text-on-surface flex flex-col font-sans">
-      {/* Global Header Island */}
-      <GlobalHeaderIsland
+      {/* Global Header */}
+      <GlobalHeader
         appName="AuditorPro Hóa Đơn"
         activeNav="invoices"
         onNavigateToInvoiceList={() => navigate('/invoices')}
@@ -161,8 +161,8 @@ export const InvoiceReplacePage: React.FC = () => {
 
       {/* Main Workspace */}
       <main className="flex-1 w-full max-w-[1440px] mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
-        {/* Invoice Replacement Legal Banner Island */}
-        <InvoiceReplacementBannerIsland
+        {/* Invoice Replacement Legal Banner */}
+        <InvoiceReplacementBanner
           originalInvoiceNumber={originalInvoice.invoiceNumber}
           originalInvoiceId={originalInvoice.id}
           originalIssueDate={originalInvoice.issueDate || originalInvoice.createdAt}
@@ -173,9 +173,9 @@ export const InvoiceReplacePage: React.FC = () => {
           onCancelReplacement={handleCancel}
         />
 
-        {/* Invoice Form Island in REPLACE mode */}
+        {/* Invoice Form in REPLACE mode */}
         <div className="bg-surface border border-outline-variant rounded-xl shadow-sm overflow-hidden">
-          <InvoiceFormIsland
+          <InvoiceForm
             mode="REPLACE"
             initialData={initialFormData}
             isSubmitting={isSubmitting}

@@ -32,7 +32,7 @@ Hệ thống quản lý hóa đơn điện tử được thiết kế nhằm gi�
 | **Domain Logic: Invoice Service & Sequence** | 3.0 giờ | 2.5 giờ | Cấp số hóa đơn `HD-YYYY-NNNNN`, quản lý CRUD và transaction thay thế |
 | **Xây dựng REST API Controller & Routes (Express)** | 2.5 giờ | 2.0 giờ | Xây dựng 9 API endpoints chuẩn RESTful, Global Error Handler |
 | **Tích hợp Puppeteer sinh file PDF hóa đơn** | 3.0 giờ | 3.0 giờ | Thiết kế HTML template A4 in đẹp chuẩn hóa đơn, stream & download file |
-| **Viết Unit Test & API Integration Test** | 3.5 giờ | 3.0 giờ | Phủ 44 test cases kiểm thử Unit Test (Vitest) và API (Supertest) |
+| **Viết Unit Test & API Integration Test** | 3.5 giờ | 3.0 giờ | Phủ 52 test cases kiểm thử Unit Test (Vitest) và API (Supertest) |
 | **Xây dựng Postman Collection & Viết README** | 2.0 giờ | 2.0 giờ | Xuất file collection test và soạn thảo tài liệu báo cáo |
 | **Tổng cộng** | **21.0 giờ** | **18.0 giờ** | **Hoàn thành sớm hơn dự kiến 3.0 giờ (Hiệu suất 116%)** |
 
@@ -193,6 +193,10 @@ npm run test:coverage
 4. **Khó khăn 4: Khả năng mở rộng và viết Unit Test độc lập**
    - *Vấn đề:* Nếu Service gọi trực tiếp Database hay ORM thì việc viết Unit Test sẽ bắt buộc phải dựng Database, khiến test chạy chậm và dễ lỗi môi trường.
    - *Giải pháp:* Áp dụng **Dependency Inversion Principle (DIP)**: `InvoiceService` chỉ nhận các Interfaces (`IInvoiceRepository`, `IInvoiceCalculationService`, `IStateMachineGuard`). Khi test chỉ cần mock interface bằng `vi.fn()` mà không cần kết nối DB.
+
+5. **Khó khăn 5: Quản lý dải số hóa đơn không lỗ hổng (Zero-Gap Sequence Architecture)**
+   - *Vấn đề:* Nếu cấp số hóa đơn chính thức ngay từ khi tạo Bản Nháp (`DRAFT`), khi người dùng xóa nháp thì dải số hóa đơn thuế sẽ bị khuyết/nhảy cóc (vi phạm quy định Thuế).
+   - *Giải pháp:* Thiết kế kiến trúc phân tách rõ ràng: Bản Nháp chỉ dùng mã tạm thời (`NHAP-XXXXXX`) và `sequenceNumber = null`. Chỉ tại thời điểm bấm **Ký Số & Phát Hành (`ISSUED`)** hoặc **Thay Thế (`REPLACED`)**, hệ thống mới tiêu hao số từ PostgreSQL sequence, đảm bảo dải số hóa đơn phát hành luôn liên tục 100%.
 
 ---
 
