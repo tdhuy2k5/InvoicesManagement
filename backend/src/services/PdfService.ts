@@ -105,9 +105,15 @@ export class PdfService implements IPdfService {
     const isDraft = invoice.status === InvoiceStatus.DRAFT;
     const isCanceled = invoice.status === InvoiceStatus.CANCELED;
     const isIssued = invoice.status === InvoiceStatus.ISSUED || invoice.status === InvoiceStatus.REPLACED;
+    const extractSeqDigits = (invNo?: string): string => {
+      if (!invNo) return '0000001';
+      const match = invNo.match(/\d+$/);
+      return match ? match[0].padStart(7, '0') : invNo;
+    };
+
     const displayNo = (invoice.sequenceNumber !== undefined && invoice.sequenceNumber !== null)
       ? String(invoice.sequenceNumber).padStart(7, '0')
-      : (invoice.invoiceNumber ? (invoice.invoiceNumber.replace(/[^\d]/g, '').padStart(7, '0') || invoice.invoiceNumber) : '0000001');
+      : (invoice.invoiceNumber ? extractSeqDigits(invoice.invoiceNumber) : '0000001');
 
     const itemsRows = (invoice.items || [])
       .map((item, index) => {

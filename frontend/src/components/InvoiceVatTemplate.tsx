@@ -154,10 +154,17 @@ export const InvoiceVatTemplate: React.FC<InvoiceVatTemplateProps> = ({
     : (calcSubtotal + calcVat);
   const words = amountInWords || convertVndToWords(calcTotal);
 
+  // Helper to extract trailing sequence digits from invoiceNumber (e.g. '1C26TAA-0000007' -> '0000007')
+  const extractSequenceDigits = (invNo?: string): string => {
+    if (!invNo) return '0000001';
+    const match = invNo.match(/\d+$/);
+    return match ? match[0].padStart(7, '0') : invNo;
+  };
+
   // Clean invoice number to 7-digit display (Avoid '000null' by checking both undefined and null)
   const displayNo = (sequenceNumber !== undefined && sequenceNumber !== null)
     ? String(sequenceNumber).padStart(7, '0')
-    : (invoiceNumber ? (invoiceNumber.replace(/[^\d]/g, '').padStart(7, '0') || invoiceNumber) : '0000001');
+    : (invoiceNumber ? extractSequenceDigits(invoiceNumber) : '0000001');
 
   // Copy title helper
   const getCopyTitle = () => {

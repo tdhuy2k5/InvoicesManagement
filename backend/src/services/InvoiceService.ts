@@ -531,6 +531,8 @@ export class InvoiceService {
     const calculatedTotals = this.calculationService.calculateInvoiceTotals(dto.items, dto.vatRate);
     const zone = original.zone || DEFAULT_INVOICE_ZONE;
     const replacementInvoiceNumber = await this.sequenceService.generateInvoiceNumber(zone);
+    const seqMatch = replacementInvoiceNumber.match(/\d+$/);
+    const sequenceNumber = seqMatch ? parseInt(seqMatch[0], 10) : undefined;
     const replacementTaxAuthorityCode = this.sequenceService.generateTaxAuthorityCode
       ? this.sequenceService.generateTaxAuthorityCode(zone)
       : `00E${zone.replace(/^1C/, '')}${Math.random().toString(16).substring(2, 10).toUpperCase()}`;
@@ -538,6 +540,7 @@ export class InvoiceService {
     const newInvoiceData: CreateInvoiceModelInput = {
       templateCode: dto.templateCode || original.templateCode || '01GTKT3/001',
       zone,
+      sequenceNumber,
       invoiceNumber: replacementInvoiceNumber,
       status: InvoiceStatus.ISSUED,
       customerName: dto.customerName,

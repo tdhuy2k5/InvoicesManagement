@@ -201,7 +201,7 @@ export const InvoicePdfViewer: React.FC<InvoicePdfViewerProps> = ({
                 </p>
                 <div className="mt-4 flex justify-between text-xs text-primary font-serif">
                   <div>Ký hiệu (Serial): <span className="font-bold">{serialNumber}</span></div>
-                  <div>Số (No.): <span className="text-error font-bold font-mono text-sm">{invoiceNumber.replace(/[^\d]/g, '') || '0000042'}</span></div>
+                  <div>Số (No.): <span className="text-error font-bold font-mono text-sm">{(invoiceNumber.match(/\d+$/)?.[0] || '0000001').padStart(7, '0')}</span></div>
                 </div>
               </div>
 
