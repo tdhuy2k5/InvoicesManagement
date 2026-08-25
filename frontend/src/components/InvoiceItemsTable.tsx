@@ -21,24 +21,7 @@ export interface InvoiceItemsTableProps {
  * Mounted on: `InvoiceDetail` (`/invoices/:id`)
  */
 export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
-  items = [
-    {
-      id: 1,
-      description: 'Bản quyền phần mềm Quản trị Doanh nghiệp ERP Cloud (Gói 12 tháng)',
-      unit: 'Gói',
-      quantity: 1,
-      unitPrice: 20000000,
-      amount: 20000000,
-    },
-    {
-      id: 2,
-      description: 'Dịch vụ đào tạo và cấu hình phân quyền hệ thống tại chỗ',
-      unit: 'Buổi',
-      quantity: 5,
-      unitPrice: 1000000,
-      amount: 5000000,
-    },
-  ],
+  items = [],
   emptyMessage = 'Chưa có dòng hàng hóa / dịch vụ nào.',
   className = '',
 }) => {

@@ -21,10 +21,10 @@ export { convertVndToWords };
  * - `renderVietnameseCurrencyWords` (executes: convertVndToWords)
  */
 export const InvoiceSummary: React.FC<InvoiceSummaryProps> = ({
-  subtotalAmount = 25000000,
-  vatRate = 10,
-  vatAmount = 2500000,
-  totalAmount = 27500000,
+  subtotalAmount = 0,
+  vatRate = 0,
+  vatAmount = 0,
+  totalAmount,
   amountInWords,
   notes,
   className = '',

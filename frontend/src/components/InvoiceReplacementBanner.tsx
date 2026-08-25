@@ -31,9 +31,9 @@ export { useInvoiceReplacement };
  * Mounted on: `InvoiceReplace` (`/invoices/:id/replace`)
  */
 export const InvoiceReplacementBanner: React.FC<InvoiceReplacementBannerProps> = ({
-  originalInvoiceNumber = 'HD-2026-00018',
+  originalInvoiceNumber = '',
   originalInvoiceId,
-  originalIssueDate = '15/08/2026',
+  originalIssueDate,
   customerName,
   totalAmount,
   isDepthCapExceeded = false,

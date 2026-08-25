@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { InvoiceEntity, INITIAL_MOCK_INVOICES } from '../mockData';
+import { InvoiceEntity } from '../mockData';
 import { invoiceApi, InvoiceListQueryParams } from '../services/invoiceApi';
 
 export interface ToastMessage {
